@@ -1,0 +1,63 @@
+@use 'config'; 
+
+div.battleship-board{
+    display: grid;
+    grid-template-columns: 0.1fr 1.9fr 1fr; 
+    grid-template-rows: 0.1fr 1.9fr 1fr; 
+    gap: 0px 0px; 
+    grid-template-areas: 
+      ". X-AXIS X-AXIS"
+      "Y-AXIS BOARD BOARD"
+      "Y-AXIS BOARD BOARD"; 
+    width: 650px;
+    height: 650px;
+    padding: 2px;
+    background-color: config.$accent-color;
+
+    .x-axis{
+        display: flex;
+        grid-area: X-AXIS;
+        background-color: yellowgreen;
+
+        .x-axis-element{
+            margin: 0 1px;
+            width: 60.83px;
+            height: 100%;
+            background-color: aqua;
+            text-align: center;
+        }
+    }
+
+    .y-axis{
+        display: flex;
+        flex-direction: column;
+        grid-area: Y-AXIS;
+        background-color: yellowgreen;
+
+        .y-axis-element{
+            margin: 1px 0;
+            width: 100%;
+            height: 60.83px;
+            background-color: aqua;
+            text-align: center;
+            line-height: 60.83px;
+        }
+    }
+
+    .board{
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+        grid-area: BOARD;
+        gap: 2px;
+        background-color: black;
+        padding: 1px;
+
+        .board-element{
+            background-color: red;
+        }
+    }
+
+
+}
+

@@ -5,10 +5,11 @@ module.exports = {
     mode: 'development', 
     entry: { 
         page: [
-            './src/index', 
+            './src/script/main', 
             './src/script/ship'
         ]
     },
+    devtool: 'inline-source-map',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name][contenthash].js',
