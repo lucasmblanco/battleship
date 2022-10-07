@@ -2,35 +2,287 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.scss":
-/*!***********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.scss ***!
-  \***********************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
+/***/ "./src/script/gameboard.js":
+/*!*********************************!*\
+  !*** ./src/script/gameboard.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
+/* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ship */ "./src/script/ship.js");
 
 
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+var gameboard = function gameboard() {
+  var shipsOnBoard = [];
+  var missedShots = [];
+
+  var showSelectedShip = function showSelectedShip(index) {
+    if (typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition();
+    return;
+  };
+
+  var showBoard = function showBoard() {
+    return shipsOnBoard.map(function (element) {
+      return element.showComposition();
+    });
+  };
+
+  var createShips = function createShips() {
+    var newShip;
+
+    for (var i = 5; i > 1; i--) {
+      if (i === 3) {
+        newShip = (0,_ship__WEBPACK_IMPORTED_MODULE_0__["default"])(i);
+        shipsOnBoard.push(newShip);
+      }
+
+      newShip = (0,_ship__WEBPACK_IMPORTED_MODULE_0__["default"])(i);
+      shipsOnBoard.push(newShip);
+    }
+  };
+
+  var assignShipPosition = function assignShipPosition(index, x, y) {
+    return shipsOnBoard[index].composePosition(x, y);
+  };
+
+  var receiveAttack = function receiveAttack(x, y) {
+    var newAttack = shipsOnBoard.some(function (element) {
+      return element.hit(x, y);
+    });
+
+    if (!newAttack) {
+      missedShots.push({
+        'x': x,
+        'y': y
+      });
+      return 'You miss the shot!';
+    }
+
+    return 'It was an impact!';
+  };
+
+  var showMissedShots = function showMissedShots() {
+    return missedShots;
+  };
+
+  var checkShipStatus = function checkShipStatus() {
+    var result = shipsOnBoard.every(function (ship) {
+      return ship.isSunk() === true;
+    });
+    return result === true ? 'All ships are lost!' : null;
+  };
+
+  return {
+    assignShipPosition: assignShipPosition,
+    receiveAttack: receiveAttack,
+    createShips: createShips,
+    showSelectedShip: showSelectedShip,
+    showMissedShots: showMissedShots,
+    checkShipStatus: checkShipStatus,
+    showBoard: showBoard
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (gameboard);
+
+/***/ }),
+
+/***/ "./src/script/gameloop.js":
+/*!********************************!*\
+  !*** ./src/script/gameloop.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _gameboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameboard */ "./src/script/gameboard.js");
+/* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
+
+
+
+var startGame = function startGame() {
+  var playerGameboard = (0,_gameboard__WEBPACK_IMPORTED_MODULE_0__["default"])();
+  var computerBoard = (0,_gameboard__WEBPACK_IMPORTED_MODULE_0__["default"])();
+  playerGameboard.createShips();
+  computerBoard.createShips();
+
+  var showPlayerShips = function showPlayerShips(container) {
+    /*
+    for(let i = 0; i < 5; i++){
+        let ship = playerGameboard.showSelectedShip(i); 
+        let shipElement = interfaceManagment.shipElements(ship)
+        containers[i].append(shipElement)
+    }
+    */
+    var playerShipsBoard = playerGameboard.showBoard();
+    playerShipsBoard.forEach(function (element) {
+      var shipFormation = _interface__WEBPACK_IMPORTED_MODULE_1__.shipElements(element.length);
+      _interface__WEBPACK_IMPORTED_MODULE_1__.appendShip(container, shipFormation);
+    });
+  };
+  /*
+      const showPlayerShips = () => {
+         
+         for(let i = 0; i < 5; i++){
+              let newShip = playerGameboard.showSelectedShip(i); 
+              createShipVisualization(newShip.length); 
+  
+          }
+      }
+  
+  */
+
+
+  return {
+    showPlayerShips: showPlayerShips
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (startGame);
+
+/***/ }),
+
+/***/ "./src/script/interface.js":
+/*!*********************************!*\
+  !*** ./src/script/interface.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "appendShip": () => (/* binding */ appendShip),
+/* harmony export */   "shipElements": () => (/* binding */ shipElements)
+/* harmony export */ });
+var shipElements = function shipElements(shipComposition) {
+  var shipContainer = document.createElement('div');
+  shipContainer.classList.add('ship-cell');
+
+  for (var i = 0; i < shipComposition; i++) {
+    var shipIndividual = document.createElement('div');
+    shipIndividual.classList.add('ship');
+    shipIndividual.classList.add(shipComposition);
+    shipContainer.append(shipIndividual);
+  }
+
+  return shipContainer;
+};
+
+var appendShip = function appendShip(container, element) {
+  container.append(element);
+};
+
 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/reset.scss":
+/***/ "./src/script/main.js":
+/*!****************************!*\
+  !*** ./src/script/main.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _styles_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../styles/style.scss */ "./src/styles/style.scss");
+/* harmony import */ var _gameloop__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gameloop */ "./src/script/gameloop.js");
+
+
+var shipsContainer = document.querySelector('div.ships-container');
+
+var startBattleship = function startBattleship() {
+  console.log('hola');
+  var newGame = (0,_gameloop__WEBPACK_IMPORTED_MODULE_1__["default"])(); //shipsContainer.forEach(element => newGame.showPlayerShips(element));
+
+  newGame.showPlayerShips(shipsContainer);
+};
+
+var playButton = document.querySelector('button.play-button');
+playButton.addEventListener('click', startBattleship);
+
+/***/ }),
+
+/***/ "./src/script/ship.js":
+/*!****************************!*\
+  !*** ./src/script/ship.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var ship = function ship(length) {
+  var shipComposition = [];
+
+  for (var i = 0; i < length; i++) {
+    shipComposition.push({
+      'x': '',
+      'y': ''
+    });
+  }
+
+  var showComposition = function showComposition() {
+    return shipComposition;
+  };
+
+  var composePosition = function composePosition(x, y) {
+    for (var _i = 0; _i < shipComposition.length; _i++) {
+      shipComposition[_i].x = x;
+      shipComposition[_i].y = y + _i;
+    }
+  };
+  /*
+  const buildShipComposition = (x, y) => {
+      for(let i = 0; i < length; i++) {
+          shipComposition.push({
+              coordinates: {x: x, y: y + i},
+              status: 'active'
+          })
+      }
+  }
+  */
+
+
+  var sayLength = function sayLength() {
+    return shipComposition.length;
+  };
+
+  var hit = function hit(x, y) {
+    var indexOfDamagePostion = shipComposition.findIndex(function (element) {
+      return JSON.stringify(element) === JSON.stringify({
+        'x': x,
+        'y': y
+      });
+    });
+    if (indexOfDamagePostion < 0) return false;
+    shipComposition.splice(indexOfDamagePostion, 1);
+    return true;
+  };
+
+  var isSunk = function isSunk() {
+    return shipComposition.length < 1;
+  };
+
+  return {
+    showComposition: showComposition,
+    sayLength: sayLength,
+    composePosition: composePosition,
+    hit: hit,
+    isSunk: isSunk
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ship);
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/style.scss":
 /*!************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/reset.scss ***!
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/style.scss ***!
   \************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -47,7 +299,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block;\n}\n\nbody {\n  line-height: 1;\n}\n\nol, ul {\n  list-style: none;\n}\n\nblockquote, q {\n  quotes: none;\n}\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: \"\";\n  content: none;\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}", "",{"version":3,"sources":["webpack://./src/styles/reset.scss"],"names":[],"mappings":"AAAA;;;CAAA;AAKA;;;;;;;;;;;;;EAaC,SAAA;EACA,UAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,wBAAA;AAAD;;AAEA,gDAAA;AACA;;EAEC,cAAA;AACD;;AACA;EACC,cAAA;AAED;;AAAA;EACC,gBAAA;AAGD;;AADA;EACC,YAAA;AAID;;AAFA;;EAEC,WAAA;EACA,aAAA;AAKD;;AAHA;EACC,yBAAA;EACA,iBAAA;AAMD","sourcesContent":["/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\r\n\r\nhtml, body, div, span, applet, object, iframe,\r\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\r\na, abbr, acronym, address, big, cite, code,\r\ndel, dfn, em, img, ins, kbd, q, s, samp,\r\nsmall, strike, strong, sub, sup, tt, var,\r\nb, u, i, center,\r\ndl, dt, dd, ol, ul, li,\r\nfieldset, form, label, legend,\r\ntable, caption, tbody, tfoot, thead, tr, th, td,\r\narticle, aside, canvas, details, embed, \r\nfigure, figcaption, footer, header, hgroup, \r\nmenu, nav, output, ruby, section, summary,\r\ntime, mark, audio, video {\r\n\tmargin: 0;\r\n\tpadding: 0;\r\n\tborder: 0;\r\n\tfont-size: 100%;\r\n\tfont: inherit;\r\n\tvertical-align: baseline;\r\n}\r\n/* HTML5 display-role reset for older browsers */\r\narticle, aside, details, figcaption, figure, \r\nfooter, header, hgroup, menu, nav, section {\r\n\tdisplay: block;\r\n}\r\nbody {\r\n\tline-height: 1;\r\n}\r\nol, ul {\r\n\tlist-style: none;\r\n}\r\nblockquote, q {\r\n\tquotes: none;\r\n}\r\nblockquote:before, blockquote:after,\r\nq:before, q:after {\r\n\tcontent: '';\r\n\tcontent: none;\r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\tborder-spacing: 0;\r\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block;\n}\n\nbody {\n  line-height: 1;\n}\n\nol, ul {\n  list-style: none;\n}\n\nblockquote, q {\n  quotes: none;\n}\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: \"\";\n  content: none;\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n\ndiv.interaction-zone {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-flow: row wrap;\n  align-items: center;\n  justify-content: center;\n  background-color: rgb(252, 239, 220);\n}\n\ndiv.battleship-board {\n  display: grid;\n  grid-template-columns: 0.1fr 1.9fr 1fr;\n  grid-template-rows: 0.1fr 1.9fr 1fr;\n  gap: 0px 0px;\n  grid-template-areas: \". X-AXIS X-AXIS\" \"Y-AXIS BOARD BOARD\" \"Y-AXIS BOARD BOARD\";\n  width: 650px;\n  height: 650px;\n  padding: 2px;\n  background-color: rgb(93, 236, 170);\n}\ndiv.battleship-board .x-axis {\n  display: flex;\n  grid-area: X-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .x-axis .x-axis-element {\n  margin: 0 1px;\n  width: 60.83px;\n  height: 100%;\n  background-color: aqua;\n  text-align: center;\n}\ndiv.battleship-board .y-axis {\n  display: flex;\n  flex-direction: column;\n  grid-area: Y-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .y-axis .y-axis-element {\n  margin: 1px 0;\n  width: 100%;\n  height: 60.83px;\n  background-color: aqua;\n  text-align: center;\n  line-height: 60.83px;\n}\ndiv.battleship-board .board {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  grid-template-rows: repeat(10, 1fr);\n  grid-area: BOARD;\n  gap: 2px;\n  background-color: black;\n  padding: 1px;\n}\ndiv.battleship-board .board .board-element {\n  background-color: red;\n}\n\nh1.title {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100vw;\n  height: 6vh;\n  text-align: center;\n}\n\ndiv.buttons-container {\n  display: flex;\n  width: 100vw;\n  height: 4vh;\n  justify-content: center;\n  align-items: center;\n}\n\nmain.main-body {\n  display: flex;\n  width: 100vw;\n  height: 90vh;\n}\n\ndiv.container-game-actions {\n  display: flex;\n  flex-flow: row wrap;\n  padding: 2px;\n  width: 700px;\n  height: 150px;\n}\n\n.ships-container {\n  background-color: red;\n}\n\n.ship-cell {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin: 2px;\n  width: 100%;\n  height: 26px;\n  background-color: blueviolet;\n}\n\n.ship {\n  margin: 1px;\n  width: 22px;\n  height: 22px;\n  background-color: darkgreen;\n}", "",{"version":3,"sources":["webpack://./src/styles/_reset.scss","webpack://./src/styles/style.scss","webpack://./src/styles/_utilities.scss","webpack://./src/styles/_config.scss","webpack://./src/styles/_battleship-board.scss"],"names":[],"mappings":"AAAA;;;CAAA;AAKA;;;;;;;;;;;;;EAaC,SAAA;EACA,UAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,wBAAA;ACAD;;ADEA,gDAAA;AACA;;EAEC,cAAA;ACCD;;ADCA;EACC,cAAA;ACED;;ADAA;EACC,gBAAA;ACGD;;ADDA;EACC,YAAA;ACID;;ADFA;;EAEC,WAAA;EACA,aAAA;ACKD;;ADHA;EACC,yBAAA;EACA,iBAAA;ACMD;;AClDA;EACI,WAAA;EACA,YAAA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,uBAAA;EACA,oCCTY;AF8DhB;;AG5DA;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,YAAA;EACA,gFACE;EAGF,YAAA;EACA,aAAA;EACA,YAAA;EACA,mCDbW;AFyEf;AG1DI;EACI,aAAA;EACA,iBAAA;EACA,6BAAA;AH4DR;AG1DQ;EACI,aAAA;EACA,cAAA;EACA,YAAA;EACA,sBAAA;EACA,kBAAA;AH4DZ;AGxDI;EACI,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,6BAAA;AH0DR;AGxDQ;EACI,aAAA;EACA,WAAA;EACA,eAAA;EACA,sBAAA;EACA,kBAAA;EACA,oBAAA;AH0DZ;AGtDI;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,gBAAA;EACA,QAAA;EACA,uBAAA;EACA,YAAA;AHwDR;AGtDQ;EACI,qBAAA;AHwDZ;;AA3GA;EACI,aAAA;EACA,uBAAA;EACA,mBAAA;EACA,YAAA;EACA,WAAA;EACA,kBAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,YAAA;EACA,WAAA;EACA,uBAAA;EACA,mBAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,YAAA;EACA,YAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,mBAAA;EACA,YAAA;EACA,YAAA;EACA,aAAA;AA8GJ;;AAzGA;EACI,qBAAA;AA4GJ;;AAzGA;EACI,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,WAAA;EACA,WAAA;EACA,YAAA;EACA,4BAAA;AA4GJ;;AAzGA;EACI,WAAA;EACA,WAAA;EACA,YAAA;EACA,2BAAA;AA4GJ","sourcesContent":["/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\r\n\r\nhtml, body, div, span, applet, object, iframe,\r\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\r\na, abbr, acronym, address, big, cite, code,\r\ndel, dfn, em, img, ins, kbd, q, s, samp,\r\nsmall, strike, strong, sub, sup, tt, var,\r\nb, u, i, center,\r\ndl, dt, dd, ol, ul, li,\r\nfieldset, form, label, legend,\r\ntable, caption, tbody, tfoot, thead, tr, th, td,\r\narticle, aside, canvas, details, embed, \r\nfigure, figcaption, footer, header, hgroup, \r\nmenu, nav, output, ruby, section, summary,\r\ntime, mark, audio, video {\r\n\tmargin: 0;\r\n\tpadding: 0;\r\n\tborder: 0;\r\n\tfont-size: 100%;\r\n\tfont: inherit;\r\n\tvertical-align: baseline;\r\n}\r\n/* HTML5 display-role reset for older browsers */\r\narticle, aside, details, figcaption, figure, \r\nfooter, header, hgroup, menu, nav, section {\r\n\tdisplay: block;\r\n}\r\nbody {\r\n\tline-height: 1;\r\n}\r\nol, ul {\r\n\tlist-style: none;\r\n}\r\nblockquote, q {\r\n\tquotes: none;\r\n}\r\nblockquote:before, blockquote:after,\r\nq:before, q:after {\r\n\tcontent: '';\r\n\tcontent: none;\r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\tborder-spacing: 0;\r\n}","@use 'reset'; \r\n@use 'config';\r\n@use 'utilities';\r\n@use 'battleship-board'; \r\n\r\nh1.title {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    width: 100vw;\r\n    height: 6vh;\r\n    text-align: center;\r\n}\r\n\r\ndiv.buttons-container{\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 4vh;\r\n    justify-content: center;\r\n    align-items: center;\r\n}\r\n\r\nmain.main-body {\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 90vh;\r\n}\r\n\r\ndiv.container-game-actions{\r\n    display: flex;\r\n    flex-flow: row wrap; \r\n    padding: 2px;\r\n    width: 700px;\r\n    height: 150px;\r\n\r\n    \r\n}\r\n\r\n.ships-container{\r\n    background-color: red;\r\n}\r\n\r\n.ship-cell{\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    margin: 2px;\r\n    width: 100%;\r\n    height: 26px;\r\n    background-color: blueviolet; \r\n}\r\n\r\n.ship{\r\n    margin: 1px;\r\n    width: 22px;\r\n    height: 22px;\r\n    background-color:darkgreen; \r\n}","@use 'config';\r\n\r\ndiv.interaction-zone {\r\n    width: 100%;\r\n    height: 100%;\r\n    display: flex;\r\n    flex-flow: row wrap;\r\n    align-items: center;\r\n    justify-content: center;\r\n    background-color: config.$primary-color;\r\n}","$primary-color: rgb(252, 239, 220); \r\n$accent-color: rgb(93, 236, 170);","@use 'config'; \r\n\r\ndiv.battleship-board{\r\n    display: grid;\r\n    grid-template-columns: 0.1fr 1.9fr 1fr; \r\n    grid-template-rows: 0.1fr 1.9fr 1fr; \r\n    gap: 0px 0px; \r\n    grid-template-areas: \r\n      \". X-AXIS X-AXIS\"\r\n      \"Y-AXIS BOARD BOARD\"\r\n      \"Y-AXIS BOARD BOARD\"; \r\n    width: 650px;\r\n    height: 650px;\r\n    padding: 2px;\r\n    background-color: config.$accent-color;\r\n\r\n    .x-axis{\r\n        display: flex;\r\n        grid-area: X-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .x-axis-element{\r\n            margin: 0 1px;\r\n            width: 60.83px;\r\n            height: 100%;\r\n            background-color: aqua;\r\n            text-align: center;\r\n        }\r\n    }\r\n\r\n    .y-axis{\r\n        display: flex;\r\n        flex-direction: column;\r\n        grid-area: Y-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .y-axis-element{\r\n            margin: 1px 0;\r\n            width: 100%;\r\n            height: 60.83px;\r\n            background-color: aqua;\r\n            text-align: center;\r\n            line-height: 60.83px;\r\n        }\r\n    }\r\n\r\n    .board{\r\n        display: grid;\r\n        grid-template-columns: repeat(10, 1fr);\r\n        grid-template-rows: repeat(10, 1fr);\r\n        grid-area: BOARD;\r\n        gap: 2px;\r\n        background-color: black;\r\n        padding: 1px;\r\n\r\n        .board-element{\r\n            background-color: red;\r\n        }\r\n    }\r\n\r\n\r\n}\r\n\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -196,63 +448,9 @@ module.exports = function (item) {
 
 /***/ }),
 
-/***/ "./src/styles/main.scss":
-/*!******************************!*\
-  !*** ./src/styles/main.scss ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./main.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.scss");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-
-      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-    
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
-/***/ "./src/styles/reset.scss":
+/***/ "./src/styles/style.scss":
 /*!*******************************!*\
-  !*** ./src/styles/reset.scss ***!
+  !*** ./src/styles/style.scss ***!
   \*******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -272,7 +470,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./reset.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/reset.scss");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_style_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./style.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/style.scss");
 
       
       
@@ -294,12 +492,12 @@ options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWi
 options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
 options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_scss__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_style_scss__WEBPACK_IMPORTED_MODULE_6__["default"], options);
 
 
 
 
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_scss__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_style_scss__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_style_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_style_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
 
 
 /***/ }),
@@ -683,37 +881,13 @@ module.exports = styleTagTransform;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other entry modules.
-(() => {
-var __webpack_exports__ = {};
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _styles_reset_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./styles/reset.scss */ "./src/styles/reset.scss");
-/* harmony import */ var _styles_main_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles/main.scss */ "./src/styles/main.scss");
-
-
-})();
-
-// This entry need to be wrapped in an IIFE because it need to be isolated against other entry modules.
-(() => {
-/*!****************************!*\
-  !*** ./src/script/ship.js ***!
-  \****************************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-var functions = {
-  add: function add(num1, num2) {
-    return num1 + num2;
-  }
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (functions);
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	__webpack_require__("./src/script/main.js");
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/script/ship.js");
+/******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=page090b669217dee7f3b327.js.map
+//# sourceMappingURL=page5cf6eb6e26adb88fabbc.js.map
