@@ -17,12 +17,12 @@ playerGameboard.receiveAttack = jest.fn();
 
 
 
-test.only('check if board received the corresponded coordenates of the attack', () => {
+test('check if board received the corresponded coordenates of the attack', () => {
     newPlayer.attackEnemyBoard(computerGameboard, 1, 5)
     expect(computerGameboard.receiveAttack).toHaveBeenCalledWith(1, 5)
 });
 
-test.only('check if computer can attack player without the needs of coordenates', () => {
+test('check if computer can attack player without the needs of coordenates', () => {
     computerPlayer.attackEnemyBoard(playerGameboard)
     expect(playerGameboard.receiveAttack).toHaveBeenCalled()
 })

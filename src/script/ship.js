@@ -10,8 +10,8 @@ const ship = (length) => {
 
     const composePosition = (x,y) => {
         for(let i = 0; i < shipComposition.length; i++) {
-            shipComposition[i].x = x;
-            shipComposition[i].y = y + i;
+            shipComposition[i].x = x + i;
+            shipComposition[i].y = y;
         }
     }
 

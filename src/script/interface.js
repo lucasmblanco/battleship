@@ -15,5 +15,28 @@ const appendShip = (container, element) => {
     container.append(element)
 }
 
+const eachTen = (container) => {
+    let elements = []; 
+    let y = 0;
+    for(let i = 0; i < container.length; i++){
+        elements.push(container[i]); 
+        if(elements.length === 10) {
+            y += 1
+            assignXY(elements, y); 
+            elements = []; 
+        }
+    }
+}
 
-export { shipElements, appendShip }
+
+const assignXY = (container, y) => {
+    for(let i = 0; i < container.length; i++){
+        container[i].setAttribute('data-x', i + 1);
+        container[i].setAttribute('data-y', y)
+    
+    }
+}
+
+
+
+export { shipElements, appendShip, eachTen }

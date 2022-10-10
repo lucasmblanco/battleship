@@ -21,20 +21,20 @@ test('see new ship composition', () => {
    newShip.composePosition(0,0)
   expect(newShip.showComposition()).toEqual([
       {x: 0, y: 0},
-      {x: 0, y: 1},
-      {x: 0, y: 2}
+      {x: 1, y: 0},
+      {x: 2, y: 0}
    ])
 })
 
 test('Was hit? (Positive outcome)', () => {
-   expect(newShip.hit(0,1)).toBeTruthy();
+   expect(newShip.hit(1,0)).toBeTruthy();
 });
 
 
 test('see new ship composition', () => {
    expect(newShip.showComposition()).toEqual([
        {x: 0, y: 0},
-       {x: 0, y: 2}
+       {x: 2, y: 0}
     ])
  })
 
@@ -44,12 +44,12 @@ test('see new ship composition', () => {
 
 test('if newShip only left one', () => {
    expect(newShip.showComposition()).toEqual([
-       {x: 0, y: 2,}
+       {x: 2, y: 0,}
     ])
  })
 
  test('delete 0,2', () => {
-   expect(newShip.hit(0,2)).toBeTruthy();
+   expect(newShip.hit(2,0)).toBeTruthy();
 });
 
 test('if newShip is empty', () => {

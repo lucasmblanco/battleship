@@ -3,14 +3,20 @@ import startGame from './gameloop'
 
 
 const shipsContainer = document.querySelector('div.ships-container'); 
+const boardElements = document.querySelectorAll('div.player'); 
 
 const startBattleship = () => {
-    console.log('hola')
+   //console.log('hola')
     const newGame = startGame(); 
-    //shipsContainer.forEach(element => newGame.showPlayerShips(element));
-    newGame.showPlayerShips(shipsContainer)
+    newGame.showPlayerShips(shipsContainer);
+    newGame.assignCoordenates(boardElements); 
 }
 
 
+
+
 const playButton = document.querySelector('button.play-button');
-playButton.addEventListener('click', startBattleship)
+playButton.addEventListener('click', startBattleship);
+
+
+//boardElements.addEventListener('click', selectPosititon)
