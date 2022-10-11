@@ -2,6 +2,55 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/script/eventsManagment.js":
+/*!***************************************!*\
+  !*** ./src/script/eventsManagment.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "assignListener": () => (/* binding */ assignListener),
+/* harmony export */   "assignListenerPerElement": () => (/* binding */ assignListenerPerElement)
+/* harmony export */ });
+var assignListener = function assignListener(container, functionality) {
+  container.forEach(function (element) {
+    element.addEventListener('click', functionality);
+  });
+};
+
+var assignListenerPerElement = function assignListenerPerElement(container, functionality) {
+  container.addEventListener('click', functionality);
+};
+
+
+
+/***/ }),
+
+/***/ "./src/script/functionality.js":
+/*!*************************************!*\
+  !*** ./src/script/functionality.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "coordenatesElection": () => (/* binding */ coordenatesElection),
+/* harmony export */   "playerBoatsFunctionality": () => (/* binding */ playerBoatsFunctionality)
+/* harmony export */ });
+var coordenatesElection = function coordenatesElection(event) {
+  console.log(event.target.dataset.x);
+  console.log(event.target.dataset.y);
+};
+
+var playerBoatsFunctionality = function playerBoatsFunctionality(event) {
+  console.log(event.target.id);
+};
+
+
+
+/***/ }),
+
 /***/ "./src/script/gameboard.js":
 /*!*********************************!*\
   !*** ./src/script/gameboard.js ***!
@@ -102,6 +151,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _gameboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameboard */ "./src/script/gameboard.js");
 /* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
+/* harmony import */ var _eventsManagment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./eventsManagment */ "./src/script/eventsManagment.js");
+/* harmony import */ var _functionality__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./functionality */ "./src/script/functionality.js");
+
+
 
 
 
@@ -113,8 +166,8 @@ var startGame = function startGame() {
 
   var showPlayerShips = function showPlayerShips(container) {
     var playerShipsBoard = playerGameboard.showBoard();
-    playerShipsBoard.forEach(function (element) {
-      var shipFormation = _interface__WEBPACK_IMPORTED_MODULE_1__.shipElements(element.length);
+    playerShipsBoard.forEach(function (element, index) {
+      var shipFormation = _interface__WEBPACK_IMPORTED_MODULE_1__.shipElements(element.length, index);
       _interface__WEBPACK_IMPORTED_MODULE_1__.appendShip(container, shipFormation);
     });
   };
@@ -123,9 +176,19 @@ var startGame = function startGame() {
     _interface__WEBPACK_IMPORTED_MODULE_1__.eachTen(container);
   };
 
+  var boardFunctionality = function boardFunctionality(container) {
+    _eventsManagment__WEBPACK_IMPORTED_MODULE_2__.assignListener(container, _functionality__WEBPACK_IMPORTED_MODULE_3__.coordenatesElection);
+  };
+
+  var boatListener = function boatListener(container) {
+    _eventsManagment__WEBPACK_IMPORTED_MODULE_2__.assignListener(container, _functionality__WEBPACK_IMPORTED_MODULE_3__.playerBoatsFunctionality);
+  };
+
   return {
     showPlayerShips: showPlayerShips,
-    assignCoordenates: assignCoordenates
+    assignCoordenates: assignCoordenates,
+    boardFunctionality: boardFunctionality,
+    boatListener: boatListener
   };
 };
 
@@ -145,18 +208,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "eachTen": () => (/* binding */ eachTen),
 /* harmony export */   "shipElements": () => (/* binding */ shipElements)
 /* harmony export */ });
-var shipElements = function shipElements(shipComposition) {
+/* harmony import */ var _eventsManagment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./eventsManagment */ "./src/script/eventsManagment.js");
+/* harmony import */ var _functionality__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functionality */ "./src/script/functionality.js");
+
+
+
+var shipElements = function shipElements(shipComposition, index) {
   var shipContainer = document.createElement('div');
   shipContainer.classList.add('ship-cell');
+  shipContainer.setAttribute('id', index);
+  _eventsManagment__WEBPACK_IMPORTED_MODULE_0__.assignListenerPerElement(shipContainer, _functionality__WEBPACK_IMPORTED_MODULE_1__.playerBoatsFunctionality);
+  createIndividualParts(shipContainer, shipComposition);
+  return shipContainer;
+};
 
-  for (var i = 0; i < shipComposition; i++) {
+var createIndividualParts = function createIndividualParts(parentContainer, length) {
+  for (var i = 0; i < length; i++) {
     var shipIndividual = document.createElement('div');
     shipIndividual.classList.add('ship');
-    shipIndividual.classList.add(shipComposition);
-    shipContainer.append(shipIndividual);
+    shipIndividual.classList.add(length);
+    parentContainer.append(shipIndividual);
   }
-
-  return shipContainer;
 };
 
 var appendShip = function appendShip(container, element) {
@@ -200,17 +272,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _gameloop__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gameloop */ "./src/script/gameloop.js");
 
 
+var playButton = document.querySelector('button.play-button');
 var shipsContainer = document.querySelector('div.ships-container');
 var boardElements = document.querySelectorAll('div.player');
 
 var startBattleship = function startBattleship() {
-  //console.log('hola')
+  var playerBoats = document.querySelectorAll('div.ship-cell'); //console.log('hola')
+
   var newGame = (0,_gameloop__WEBPACK_IMPORTED_MODULE_1__["default"])();
   newGame.showPlayerShips(shipsContainer);
   newGame.assignCoordenates(boardElements);
+  newGame.boardFunctionality(boardElements); //newGame.boatListener(playerBoats)
 };
 
-var playButton = document.querySelector('button.play-button');
 playButton.addEventListener('click', startBattleship); //boardElements.addEventListener('click', selectPosititon)
 
 /***/ }),
@@ -900,4 +974,4 @@ module.exports = styleTagTransform;
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=page868ba592869363672ef6.js.map
+//# sourceMappingURL=page44e319e4c3b56f81305d.js.map

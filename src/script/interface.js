@@ -1,14 +1,23 @@
-const shipElements = (shipComposition) => {
+import * as EventManagment from "./eventsManagment"
+import * as Functionality from "./functionality"
+
+const shipElements = (shipComposition, index) => {
     const shipContainer = document.createElement('div'); 
-    shipContainer.classList.add('ship-cell')
-    for(let i = 0; i < shipComposition; i++){
+    shipContainer.classList.add('ship-cell');
+    shipContainer.setAttribute('id', index); 
+    EventManagment.assignListenerPerElement(shipContainer, Functionality.playerBoatsFunctionality)
+    createIndividualParts(shipContainer, shipComposition)
+    return shipContainer; 
+}
+
+
+const createIndividualParts = (parentContainer, length) => {
+    for(let i = 0; i < length; i++){
         let shipIndividual = document.createElement('div');
         shipIndividual.classList.add('ship'); 
-        shipIndividual.classList.add(shipComposition);
-        shipContainer.append(shipIndividual); 
+        shipIndividual.classList.add(length);
+        parentContainer.append(shipIndividual); 
     }
-    
-    return shipContainer; 
 }
 
 const appendShip = (container, element) => {
@@ -29,6 +38,8 @@ const eachTen = (container) => {
 }
 
 
+
+
 const assignXY = (container, y) => {
     for(let i = 0; i < container.length; i++){
         container[i].setAttribute('data-x', i + 1);
@@ -36,6 +47,10 @@ const assignXY = (container, y) => {
     
     }
 }
+
+
+
+
 
 
 

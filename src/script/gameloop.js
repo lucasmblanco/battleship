@@ -1,6 +1,7 @@
 import gameboard from "./gameboard"
 import * as interfaceManagment from "./interface"
-
+import * as EventManagment from "./eventsManagment"
+import * as Functionality from "./functionality"
 
 const startGame = () => {
 
@@ -12,8 +13,8 @@ const startGame = () => {
 
     const showPlayerShips = (container) => {
         const playerShipsBoard = playerGameboard.showBoard(); 
-        playerShipsBoard.forEach(element => {
-            let shipFormation = interfaceManagment.shipElements(element.length);
+        playerShipsBoard.forEach((element, index) => {
+            let shipFormation = interfaceManagment.shipElements(element.length, index);
             interfaceManagment.appendShip(container, shipFormation); 
         })
     }
@@ -22,8 +23,15 @@ const startGame = () => {
         interfaceManagment.eachTen(container);
     }
 
+    const boardFunctionality = (container) => {
+        EventManagment.assignListener(container, Functionality.coordenatesElection); 
+    }
 
-    return {showPlayerShips, assignCoordenates}
+    const boatListener = (container) => {
+        EventManagment.assignListener(container, Functionality.playerBoatsFunctionality); 
+    }
+
+    return {showPlayerShips, assignCoordenates, boardFunctionality, boatListener}
 
 }
 
