@@ -63,12 +63,12 @@ const assignXY = (container, y) => {
 }
 
 const shipElementFunctionality = (board) => {
-   // console.log(board)
+
     const playerShips = document.querySelectorAll('div.ship-cell');
 
     playerShips.forEach(element => {
         element.addEventListener('click', function(e){
-            Functionality.playerShipFunctionality(e, board);
+            Functionality.assignListenerToBoard(e, board);
         }, {once: true})
     })
 }
@@ -83,4 +83,11 @@ const showPlayerShips = (board) => {
 }
 
 
-export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips }
+const deleteBoardInteraction = () => {
+    const boardElements = document.querySelectorAll('div.player'); 
+    boardElements.forEach(element => {
+        element.removeEventListener('click', element.fn)
+    })
+}
+
+export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, deleteBoardInteraction }

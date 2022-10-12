@@ -1,18 +1,32 @@
 const ship = (length) => {
 
     const shipComposition = [];
-    for(let i = 0; i < length; i++) {
-        shipComposition.push({'x': '', 'y': ''})
-    }
+    createComposition(length); 
     
+    
+    function createComposition(length){
+        for(let i = 0; i < length; i++) {
+            shipComposition.push({'x': '', 'y': ''})
+        }
+    }
+
     const showComposition = () => shipComposition;
 
 
-    const composePosition = (x,y) => {
+    const fillComposition = (x,y) => {
+        if( x + shipComposition.length > 11) return 
         for(let i = 0; i < shipComposition.length; i++) {
+            
             shipComposition[i].x = x + i;
             shipComposition[i].y = y;
+            
+           
+            
         }
+
+
+
+        
     }
 
     /*
@@ -37,7 +51,7 @@ const ship = (length) => {
 
     const isSunk = () => shipComposition.length < 1 
 
-    return { showComposition, sayLength, composePosition, hit, isSunk }
+    return { createComposition, showComposition, sayLength, fillComposition, hit, isSunk }
 }
 
 export default ship 

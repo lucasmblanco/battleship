@@ -2,31 +2,24 @@ import * as InterfaceManagment from "./interface"
 
 
 
-const playerShipFunctionality = (event, board) => {
-    const numberID = event.target.id;
-   // const newBoard = board; 
-  //  console.log(newBoard)
+const assignListenerToBoard = (event, board) => {
+    const numberID = Number(event.target.id); 
     const boardElements = document.querySelectorAll('div.player'); 
     boardElements.forEach((element) => {
-       
-        element.addEventListener('click', function(e){
-            coordenatesElection(e, board, numberID);
+
+     element.removeEventListener('click', element.fn)
+        element.addEventListener('click', element.fn = function(e){
+            assignPositionAndDeleteInteraction(e, board, numberID, boardElements);
         }, {once: true})
     })
 }
 
 
-const coordenatesElection = (event, board, numberID) => {
-    board.assignShipPosition(Number(numberID), event.target.dataset.x, event.target.dataset.y);
 
-    console.log(board.showSelectedShip(Number(numberID)))
-
-
+const assignPositionAndDeleteInteraction = (event, board, numberID) => {
+    board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y));
+    InterfaceManagment.deleteBoardInteraction();
 }
 
-/*
-const elementSelection = (element, position) => {
 
-}
-*/
-export {coordenatesElection, playerShipFunctionality}
+export { assignListenerToBoard }

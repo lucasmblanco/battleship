@@ -18,7 +18,7 @@ test('parts of the ship with coordinates', () => {
 
 
 test('see new ship composition', () => {
-   newShip.composePosition(0,0)
+   newShip.fillComposition(0,0)
   expect(newShip.showComposition()).toEqual([
       {x: 0, y: 0},
       {x: 1, y: 0},
