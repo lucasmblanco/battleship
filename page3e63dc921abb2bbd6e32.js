@@ -36,16 +36,35 @@ var assignListenerPerElement = function assignListenerPerElement(container, func
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "coordenatesElection": () => (/* binding */ coordenatesElection),
-/* harmony export */   "playerBoatsFunctionality": () => (/* binding */ playerBoatsFunctionality)
+/* harmony export */   "playerShipFunctionality": () => (/* binding */ playerShipFunctionality)
 /* harmony export */ });
-var coordenatesElection = function coordenatesElection(event) {
-  console.log(event.target.dataset.x);
-  console.log(event.target.dataset.y);
+/* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
+
+
+var playerShipFunctionality = function playerShipFunctionality(event, board) {
+  var numberID = event.target.id; // const newBoard = board; 
+  //  console.log(newBoard)
+
+  var boardElements = document.querySelectorAll('div.player');
+  boardElements.forEach(function (element) {
+    element.addEventListener('click', function (e) {
+      coordenatesElection(e, board, numberID);
+    }, {
+      once: true
+    });
+  });
 };
 
-var playerBoatsFunctionality = function playerBoatsFunctionality(event) {
-  console.log(event.target.id);
+var coordenatesElection = function coordenatesElection(event, board, numberID) {
+  board.assignShipPosition(Number(numberID), event.target.dataset.x, event.target.dataset.y);
+  console.log(board.showSelectedShip(Number(numberID)));
 };
+/*
+const elementSelection = (element, position) => {
+
+}
+*/
+
 
 
 
@@ -147,7 +166,8 @@ var gameboard = function gameboard() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "preGame": () => (/* binding */ preGame),
+/* harmony export */   "startGame": () => (/* binding */ startGame)
 /* harmony export */ });
 /* harmony import */ var _gameboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameboard */ "./src/script/gameboard.js");
 /* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
@@ -158,41 +178,35 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var startGame = function startGame() {
+var preGame = function preGame() {
   var playerGameboard = (0,_gameboard__WEBPACK_IMPORTED_MODULE_0__["default"])();
   var computerBoard = (0,_gameboard__WEBPACK_IMPORTED_MODULE_0__["default"])();
   playerGameboard.createShips();
-  computerBoard.createShips();
+  computerBoard.createShips(); // interfaceManagment.showPlayerShips(playerGameboard); 
+  //interfaceManagment.shipElementFunctionality(); 
+  //   playerGameboard.assignShipPosition()
 
-  var showPlayerShips = function showPlayerShips(container) {
-    var playerShipsBoard = playerGameboard.showBoard();
-    playerShipsBoard.forEach(function (element, index) {
-      var shipFormation = _interface__WEBPACK_IMPORTED_MODULE_1__.shipElements(element.length, index);
-      _interface__WEBPACK_IMPORTED_MODULE_1__.appendShip(container, shipFormation);
-    });
-  };
-
-  var assignCoordenates = function assignCoordenates(container) {
-    _interface__WEBPACK_IMPORTED_MODULE_1__.eachTen(container);
-  };
-
-  var boardFunctionality = function boardFunctionality(container) {
-    _eventsManagment__WEBPACK_IMPORTED_MODULE_2__.assignListener(container, _functionality__WEBPACK_IMPORTED_MODULE_3__.coordenatesElection);
-  };
-
-  var boatListener = function boatListener(container) {
-    _eventsManagment__WEBPACK_IMPORTED_MODULE_2__.assignListener(container, _functionality__WEBPACK_IMPORTED_MODULE_3__.playerBoatsFunctionality);
-  };
+  /*
+  const showPlayerShips = (container) => {
+      const playerShipsBoard = playerGameboard.showBoard(); 
+      playerShipsBoard.forEach((element, index) => {
+          let shipFormation = interfaceManagment.shipElements(element.length, index);
+          interfaceManagment.appendShip(container, shipFormation); 
+      })
+  }
+  */
 
   return {
-    showPlayerShips: showPlayerShips,
-    assignCoordenates: assignCoordenates,
-    boardFunctionality: boardFunctionality,
-    boatListener: boatListener
+    playerGameboard: playerGameboard,
+    computerBoard: computerBoard
   };
 };
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (startGame);
+var startGame = function startGame() {
+  console.log('hola');
+};
+
+
 
 /***/ }),
 
@@ -205,22 +219,25 @@ var startGame = function startGame() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "appendShip": () => (/* binding */ appendShip),
-/* harmony export */   "eachTen": () => (/* binding */ eachTen),
-/* harmony export */   "shipElements": () => (/* binding */ shipElements)
+/* harmony export */   "boardElementsFunctionality": () => (/* binding */ boardElementsFunctionality),
+/* harmony export */   "shipElementFunctionality": () => (/* binding */ shipElementFunctionality),
+/* harmony export */   "shipElements": () => (/* binding */ shipElements),
+/* harmony export */   "showPlayerShips": () => (/* binding */ showPlayerShips)
 /* harmony export */ });
 /* harmony import */ var _eventsManagment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./eventsManagment */ "./src/script/eventsManagment.js");
 /* harmony import */ var _functionality__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functionality */ "./src/script/functionality.js");
 
-
+ // Crea el contenedor de los barcos y segun la composicion de cada uno crea divs dentro de este
 
 var shipElements = function shipElements(shipComposition, index) {
   var shipContainer = document.createElement('div');
   shipContainer.classList.add('ship-cell');
-  shipContainer.setAttribute('id', index);
-  _eventsManagment__WEBPACK_IMPORTED_MODULE_0__.assignListenerPerElement(shipContainer, _functionality__WEBPACK_IMPORTED_MODULE_1__.playerBoatsFunctionality);
+  shipContainer.setAttribute('id', index); //  EventManagment.assignListenerPerElement(shipContainer, Functionality.playerShipFunctionality)
+
   createIndividualParts(shipContainer, shipComposition);
   return shipContainer;
-};
+}; // se encarga de crear la composicion segun la longitud y luego adherirla a un contenedor padre 
+
 
 var createIndividualParts = function createIndividualParts(parentContainer, length) {
   for (var i = 0; i < length; i++) {
@@ -229,13 +246,27 @@ var createIndividualParts = function createIndividualParts(parentContainer, leng
     shipIndividual.classList.add(length);
     parentContainer.append(shipIndividual);
   }
-};
+}; //apende elementos a otro contenedor
+
 
 var appendShip = function appendShip(container, element) {
   container.append(element);
-};
+}; // Añade functionalidad a los dos paneles
 
-var eachTen = function eachTen(container) {
+
+var boardElementsFunctionality = function boardElementsFunctionality() {
+  var playerBoardElements = document.querySelectorAll('div.player');
+  playerBoardListenerAndCoordenates(playerBoardElements);
+}; // añade funcionalidad y coordenadas al panel del jugador 
+
+
+var playerBoardListenerAndCoordenates = function playerBoardListenerAndCoordenates(container) {
+  //EventManagment.assignListener(container, Functionality.coordenatesElection); 
+  eachTen(container, assignXY);
+}; // toma 10 elementos de un contendor y le aplica una funcion callback 
+
+
+var eachTen = function eachTen(container, callback) {
   var elements = [];
   var y = 0;
 
@@ -244,17 +275,38 @@ var eachTen = function eachTen(container) {
 
     if (elements.length === 10) {
       y += 1;
-      assignXY(elements, y);
+      callback(elements, y);
       elements = [];
     }
   }
-};
+}; //asigna coordenadas a los contenedores
+
 
 var assignXY = function assignXY(container, y) {
   for (var i = 0; i < container.length; i++) {
     container[i].setAttribute('data-x', i + 1);
     container[i].setAttribute('data-y', y);
   }
+};
+
+var shipElementFunctionality = function shipElementFunctionality(board) {
+  // console.log(board)
+  var playerShips = document.querySelectorAll('div.ship-cell');
+  playerShips.forEach(function (element) {
+    element.addEventListener('click', function (e) {
+      _functionality__WEBPACK_IMPORTED_MODULE_1__.playerShipFunctionality(e, board);
+    }, {
+      once: true
+    });
+  });
+};
+
+var showPlayerShips = function showPlayerShips(board) {
+  var shipsContainer = document.querySelector('div.ships-container');
+  var playerShipsBoard = board.showBoard();
+  playerShipsBoard.forEach(function (element, index) {
+    appendShip(shipsContainer, shipElements(element.length, index));
+  });
 };
 
 
@@ -270,22 +322,22 @@ var assignXY = function assignXY(container, y) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _styles_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../styles/style.scss */ "./src/styles/style.scss");
 /* harmony import */ var _gameloop__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gameloop */ "./src/script/gameloop.js");
+/* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
 
 
-var playButton = document.querySelector('button.play-button');
-var shipsContainer = document.querySelector('div.ships-container');
-var boardElements = document.querySelectorAll('div.player');
+
+var playButton = document.querySelector('button.play-button'); //const shipsContainer = document.querySelector('div.ships-container'); 
 
 var startBattleship = function startBattleship() {
-  var playerBoats = document.querySelectorAll('div.ship-cell'); //console.log('hola')
+  var newGame = _gameloop__WEBPACK_IMPORTED_MODULE_1__.preGame(); // newGame.showPlayerShips(shipsContainer);
+  //  InterfaceManagment.shipElementFunctionality(); 
 
-  var newGame = (0,_gameloop__WEBPACK_IMPORTED_MODULE_1__["default"])();
-  newGame.showPlayerShips(shipsContainer);
-  newGame.assignCoordenates(boardElements);
-  newGame.boardFunctionality(boardElements); //newGame.boatListener(playerBoats)
+  _interface__WEBPACK_IMPORTED_MODULE_2__.showPlayerShips(newGame.playerGameboard);
+  _interface__WEBPACK_IMPORTED_MODULE_2__.shipElementFunctionality(newGame.playerGameboard);
 };
 
-playButton.addEventListener('click', startBattleship); //boardElements.addEventListener('click', selectPosititon)
+playButton.addEventListener('click', startBattleship);
+_interface__WEBPACK_IMPORTED_MODULE_2__.boardElementsFunctionality(); //boardElements.addEventListener('click', selectPosititon)
 
 /***/ }),
 
@@ -383,7 +435,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block;\n}\n\nbody {\n  line-height: 1;\n}\n\nol, ul {\n  list-style: none;\n}\n\nblockquote, q {\n  quotes: none;\n}\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: \"\";\n  content: none;\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n\ndiv.interaction-zone {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-flow: row wrap;\n  align-items: center;\n  justify-content: center;\n  background-color: rgb(252, 239, 220);\n}\n\ndiv.battleship-board {\n  display: grid;\n  grid-template-columns: 0.1fr 1.9fr 1fr;\n  grid-template-rows: 0.1fr 1.9fr 1fr;\n  gap: 0px 0px;\n  grid-template-areas: \". X-AXIS X-AXIS\" \"Y-AXIS BOARD BOARD\" \"Y-AXIS BOARD BOARD\";\n  width: 650px;\n  height: 650px;\n  padding: 2px;\n  background-color: rgb(93, 236, 170);\n}\ndiv.battleship-board .x-axis {\n  display: flex;\n  grid-area: X-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .x-axis .x-axis-element {\n  margin: 0 1px;\n  width: 60.83px;\n  height: 100%;\n  background-color: aqua;\n  text-align: center;\n}\ndiv.battleship-board .y-axis {\n  display: flex;\n  flex-direction: column;\n  grid-area: Y-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .y-axis .y-axis-element {\n  margin: 1px 0;\n  width: 100%;\n  height: 60.83px;\n  background-color: aqua;\n  text-align: center;\n  line-height: 60.83px;\n}\ndiv.battleship-board .board {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  grid-template-rows: repeat(10, 1fr);\n  grid-area: BOARD;\n  gap: 2px;\n  background-color: black;\n  padding: 1px;\n}\ndiv.battleship-board .board .board-element {\n  background-color: red;\n}\n\nh1.title {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100vw;\n  height: 6vh;\n  text-align: center;\n}\n\ndiv.buttons-container {\n  display: flex;\n  width: 100vw;\n  height: 4vh;\n  justify-content: center;\n  align-items: center;\n}\n\nmain.main-body {\n  display: flex;\n  width: 100vw;\n  height: 90vh;\n}\n\ndiv.container-game-actions {\n  display: flex;\n  flex-flow: row wrap;\n  padding: 2px;\n  width: 700px;\n  height: 150px;\n}\n\n.ships-container {\n  background-color: red;\n}\n\n.ship-cell {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin: 2px;\n  width: 100%;\n  height: 26px;\n  background-color: blueviolet;\n}\n\n.ship {\n  margin: 1px;\n  width: 22px;\n  height: 22px;\n  background-color: darkgreen;\n}", "",{"version":3,"sources":["webpack://./src/styles/_reset.scss","webpack://./src/styles/style.scss","webpack://./src/styles/_utilities.scss","webpack://./src/styles/_config.scss","webpack://./src/styles/_battleship-board.scss"],"names":[],"mappings":"AAAA;;;CAAA;AAKA;;;;;;;;;;;;;EAaC,SAAA;EACA,UAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,wBAAA;ACAD;;ADEA,gDAAA;AACA;;EAEC,cAAA;ACCD;;ADCA;EACC,cAAA;ACED;;ADAA;EACC,gBAAA;ACGD;;ADDA;EACC,YAAA;ACID;;ADFA;;EAEC,WAAA;EACA,aAAA;ACKD;;ADHA;EACC,yBAAA;EACA,iBAAA;ACMD;;AClDA;EACI,WAAA;EACA,YAAA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,uBAAA;EACA,oCCTY;AF8DhB;;AG5DA;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,YAAA;EACA,gFACE;EAGF,YAAA;EACA,aAAA;EACA,YAAA;EACA,mCDbW;AFyEf;AG1DI;EACI,aAAA;EACA,iBAAA;EACA,6BAAA;AH4DR;AG1DQ;EACI,aAAA;EACA,cAAA;EACA,YAAA;EACA,sBAAA;EACA,kBAAA;AH4DZ;AGxDI;EACI,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,6BAAA;AH0DR;AGxDQ;EACI,aAAA;EACA,WAAA;EACA,eAAA;EACA,sBAAA;EACA,kBAAA;EACA,oBAAA;AH0DZ;AGtDI;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,gBAAA;EACA,QAAA;EACA,uBAAA;EACA,YAAA;AHwDR;AGtDQ;EACI,qBAAA;AHwDZ;;AA3GA;EACI,aAAA;EACA,uBAAA;EACA,mBAAA;EACA,YAAA;EACA,WAAA;EACA,kBAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,YAAA;EACA,WAAA;EACA,uBAAA;EACA,mBAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,YAAA;EACA,YAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,mBAAA;EACA,YAAA;EACA,YAAA;EACA,aAAA;AA8GJ;;AAzGA;EACI,qBAAA;AA4GJ;;AAzGA;EACI,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,WAAA;EACA,WAAA;EACA,YAAA;EACA,4BAAA;AA4GJ;;AAzGA;EACI,WAAA;EACA,WAAA;EACA,YAAA;EACA,2BAAA;AA4GJ","sourcesContent":["/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\r\n\r\nhtml, body, div, span, applet, object, iframe,\r\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\r\na, abbr, acronym, address, big, cite, code,\r\ndel, dfn, em, img, ins, kbd, q, s, samp,\r\nsmall, strike, strong, sub, sup, tt, var,\r\nb, u, i, center,\r\ndl, dt, dd, ol, ul, li,\r\nfieldset, form, label, legend,\r\ntable, caption, tbody, tfoot, thead, tr, th, td,\r\narticle, aside, canvas, details, embed, \r\nfigure, figcaption, footer, header, hgroup, \r\nmenu, nav, output, ruby, section, summary,\r\ntime, mark, audio, video {\r\n\tmargin: 0;\r\n\tpadding: 0;\r\n\tborder: 0;\r\n\tfont-size: 100%;\r\n\tfont: inherit;\r\n\tvertical-align: baseline;\r\n}\r\n/* HTML5 display-role reset for older browsers */\r\narticle, aside, details, figcaption, figure, \r\nfooter, header, hgroup, menu, nav, section {\r\n\tdisplay: block;\r\n}\r\nbody {\r\n\tline-height: 1;\r\n}\r\nol, ul {\r\n\tlist-style: none;\r\n}\r\nblockquote, q {\r\n\tquotes: none;\r\n}\r\nblockquote:before, blockquote:after,\r\nq:before, q:after {\r\n\tcontent: '';\r\n\tcontent: none;\r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\tborder-spacing: 0;\r\n}","@use 'reset'; \r\n@use 'config';\r\n@use 'utilities';\r\n@use 'battleship-board'; \r\n\r\nh1.title {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    width: 100vw;\r\n    height: 6vh;\r\n    text-align: center;\r\n}\r\n\r\ndiv.buttons-container{\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 4vh;\r\n    justify-content: center;\r\n    align-items: center;\r\n}\r\n\r\nmain.main-body {\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 90vh;\r\n}\r\n\r\ndiv.container-game-actions{\r\n    display: flex;\r\n    flex-flow: row wrap; \r\n    padding: 2px;\r\n    width: 700px;\r\n    height: 150px;\r\n\r\n    \r\n}\r\n\r\n.ships-container{\r\n    background-color: red;\r\n}\r\n\r\n.ship-cell{\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    margin: 2px;\r\n    width: 100%;\r\n    height: 26px;\r\n    background-color: blueviolet; \r\n}\r\n\r\n.ship{\r\n    margin: 1px;\r\n    width: 22px;\r\n    height: 22px;\r\n    background-color:darkgreen; \r\n}","@use 'config';\r\n\r\ndiv.interaction-zone {\r\n    width: 100%;\r\n    height: 100%;\r\n    display: flex;\r\n    flex-flow: row wrap;\r\n    align-items: center;\r\n    justify-content: center;\r\n    background-color: config.$primary-color;\r\n}","$primary-color: rgb(252, 239, 220); \r\n$accent-color: rgb(93, 236, 170);","@use 'config'; \r\n\r\ndiv.battleship-board{\r\n    display: grid;\r\n    grid-template-columns: 0.1fr 1.9fr 1fr; \r\n    grid-template-rows: 0.1fr 1.9fr 1fr; \r\n    gap: 0px 0px; \r\n    grid-template-areas: \r\n      \". X-AXIS X-AXIS\"\r\n      \"Y-AXIS BOARD BOARD\"\r\n      \"Y-AXIS BOARD BOARD\"; \r\n    width: 650px;\r\n    height: 650px;\r\n    padding: 2px;\r\n    background-color: config.$accent-color;\r\n\r\n    .x-axis{\r\n        display: flex;\r\n        grid-area: X-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .x-axis-element{\r\n            margin: 0 1px;\r\n            width: 60.83px;\r\n            height: 100%;\r\n            background-color: aqua;\r\n            text-align: center;\r\n        }\r\n    }\r\n\r\n    .y-axis{\r\n        display: flex;\r\n        flex-direction: column;\r\n        grid-area: Y-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .y-axis-element{\r\n            margin: 1px 0;\r\n            width: 100%;\r\n            height: 60.83px;\r\n            background-color: aqua;\r\n            text-align: center;\r\n            line-height: 60.83px;\r\n        }\r\n    }\r\n\r\n    .board{\r\n        display: grid;\r\n        grid-template-columns: repeat(10, 1fr);\r\n        grid-template-rows: repeat(10, 1fr);\r\n        grid-area: BOARD;\r\n        gap: 2px;\r\n        background-color: black;\r\n        padding: 1px;\r\n\r\n        .board-element{\r\n            background-color: red;\r\n        }\r\n    }\r\n\r\n\r\n}\r\n\r\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block;\n}\n\nbody {\n  line-height: 1;\n}\n\nol, ul {\n  list-style: none;\n}\n\nblockquote, q {\n  quotes: none;\n}\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: \"\";\n  content: none;\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n\ndiv.interaction-zone {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-flow: row wrap;\n  align-items: center;\n  justify-content: center;\n  background-color: rgb(252, 239, 220);\n}\n\ndiv.battleship-board {\n  display: grid;\n  grid-template-columns: 0.1fr 1.9fr 1fr;\n  grid-template-rows: 0.1fr 1.9fr 1fr;\n  gap: 0px 0px;\n  grid-template-areas: \". X-AXIS X-AXIS\" \"Y-AXIS BOARD BOARD\" \"Y-AXIS BOARD BOARD\";\n  width: 650px;\n  height: 650px;\n  padding: 2px;\n  background-color: rgb(93, 236, 170);\n}\ndiv.battleship-board .x-axis {\n  display: flex;\n  grid-area: X-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .x-axis .x-axis-element {\n  margin: 0 1px;\n  width: 60.83px;\n  height: 100%;\n  background-color: aqua;\n  text-align: center;\n}\ndiv.battleship-board .y-axis {\n  display: flex;\n  flex-direction: column;\n  grid-area: Y-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .y-axis .y-axis-element {\n  margin: 1px 0;\n  width: 100%;\n  height: 60.83px;\n  background-color: aqua;\n  text-align: center;\n  line-height: 60.83px;\n}\ndiv.battleship-board .board {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  grid-template-rows: repeat(10, 1fr);\n  grid-area: BOARD;\n  gap: 2px;\n  background-color: black;\n  padding: 1px;\n}\ndiv.battleship-board .board .board-element {\n  background-color: red;\n}\n\nh1.title {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100vw;\n  height: 6vh;\n  text-align: center;\n}\n\ndiv.buttons-container {\n  display: flex;\n  width: 100vw;\n  height: 4vh;\n  justify-content: center;\n  align-items: center;\n}\n\nmain.main-body {\n  display: flex;\n  width: 100vw;\n  height: 90vh;\n}\n\ndiv.container-game-actions {\n  display: flex;\n  flex-flow: row wrap;\n  padding: 2px;\n  width: 700px;\n  height: 150px;\n}\n\n.ships-container {\n  background-color: red;\n}\n\n.ship-cell {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin: 2px;\n  width: 100%;\n  height: 26px;\n  background-color: blueviolet;\n}\n.ship-cell:hover {\n  background-color: black;\n}\n.ship-cell:focus-within {\n  background-color: pink;\n}\n\n.ship {\n  margin: 1px;\n  width: 22px;\n  height: 22px;\n  background-color: darkgreen;\n}", "",{"version":3,"sources":["webpack://./src/styles/_reset.scss","webpack://./src/styles/style.scss","webpack://./src/styles/_utilities.scss","webpack://./src/styles/_config.scss","webpack://./src/styles/_battleship-board.scss"],"names":[],"mappings":"AAAA;;;CAAA;AAKA;;;;;;;;;;;;;EAaC,SAAA;EACA,UAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,wBAAA;ACAD;;ADEA,gDAAA;AACA;;EAEC,cAAA;ACCD;;ADCA;EACC,cAAA;ACED;;ADAA;EACC,gBAAA;ACGD;;ADDA;EACC,YAAA;ACID;;ADFA;;EAEC,WAAA;EACA,aAAA;ACKD;;ADHA;EACC,yBAAA;EACA,iBAAA;ACMD;;AClDA;EACI,WAAA;EACA,YAAA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,uBAAA;EACA,oCCTY;AF8DhB;;AG5DA;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,YAAA;EACA,gFACE;EAGF,YAAA;EACA,aAAA;EACA,YAAA;EACA,mCDbW;AFyEf;AG1DI;EACI,aAAA;EACA,iBAAA;EACA,6BAAA;AH4DR;AG1DQ;EACI,aAAA;EACA,cAAA;EACA,YAAA;EACA,sBAAA;EACA,kBAAA;AH4DZ;AGxDI;EACI,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,6BAAA;AH0DR;AGxDQ;EACI,aAAA;EACA,WAAA;EACA,eAAA;EACA,sBAAA;EACA,kBAAA;EACA,oBAAA;AH0DZ;AGtDI;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,gBAAA;EACA,QAAA;EACA,uBAAA;EACA,YAAA;AHwDR;AGtDQ;EACI,qBAAA;AHwDZ;;AA3GA;EACI,aAAA;EACA,uBAAA;EACA,mBAAA;EACA,YAAA;EACA,WAAA;EACA,kBAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,YAAA;EACA,WAAA;EACA,uBAAA;EACA,mBAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,YAAA;EACA,YAAA;AA8GJ;;AA3GA;EACI,aAAA;EACA,mBAAA;EACA,YAAA;EACA,YAAA;EACA,aAAA;AA8GJ;;AAzGA;EACI,qBAAA;AA4GJ;;AAzGA;EACI,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,WAAA;EACA,WAAA;EACA,YAAA;EACA,4BAAA;AA4GJ;AA1GI;EACI,uBAAA;AA4GR;AAzGI;EACI,sBAAA;AA2GR;;AAvGA;EACI,WAAA;EACA,WAAA;EACA,YAAA;EACA,2BAAA;AA0GJ","sourcesContent":["/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\r\n\r\nhtml, body, div, span, applet, object, iframe,\r\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\r\na, abbr, acronym, address, big, cite, code,\r\ndel, dfn, em, img, ins, kbd, q, s, samp,\r\nsmall, strike, strong, sub, sup, tt, var,\r\nb, u, i, center,\r\ndl, dt, dd, ol, ul, li,\r\nfieldset, form, label, legend,\r\ntable, caption, tbody, tfoot, thead, tr, th, td,\r\narticle, aside, canvas, details, embed, \r\nfigure, figcaption, footer, header, hgroup, \r\nmenu, nav, output, ruby, section, summary,\r\ntime, mark, audio, video {\r\n\tmargin: 0;\r\n\tpadding: 0;\r\n\tborder: 0;\r\n\tfont-size: 100%;\r\n\tfont: inherit;\r\n\tvertical-align: baseline;\r\n}\r\n/* HTML5 display-role reset for older browsers */\r\narticle, aside, details, figcaption, figure, \r\nfooter, header, hgroup, menu, nav, section {\r\n\tdisplay: block;\r\n}\r\nbody {\r\n\tline-height: 1;\r\n}\r\nol, ul {\r\n\tlist-style: none;\r\n}\r\nblockquote, q {\r\n\tquotes: none;\r\n}\r\nblockquote:before, blockquote:after,\r\nq:before, q:after {\r\n\tcontent: '';\r\n\tcontent: none;\r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\tborder-spacing: 0;\r\n}","@use 'reset'; \r\n@use 'config';\r\n@use 'utilities';\r\n@use 'battleship-board'; \r\n\r\nh1.title {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    width: 100vw;\r\n    height: 6vh;\r\n    text-align: center;\r\n}\r\n\r\ndiv.buttons-container{\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 4vh;\r\n    justify-content: center;\r\n    align-items: center;\r\n}\r\n\r\nmain.main-body {\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 90vh;\r\n}\r\n\r\ndiv.container-game-actions{\r\n    display: flex;\r\n    flex-flow: row wrap; \r\n    padding: 2px;\r\n    width: 700px;\r\n    height: 150px;\r\n\r\n    \r\n}\r\n\r\n.ships-container{\r\n    background-color: red;\r\n}\r\n\r\n.ship-cell{\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    margin: 2px;\r\n    width: 100%;\r\n    height: 26px;\r\n    background-color: blueviolet; \r\n\r\n    &:hover{\r\n        background-color: black;\r\n    }\r\n\r\n    &:focus-within{\r\n        background-color: pink\r\n    }\r\n}\r\n\r\n.ship{\r\n    margin: 1px;\r\n    width: 22px;\r\n    height: 22px;\r\n    background-color:darkgreen; \r\n\r\n    \r\n}\r\n\r\n","@use 'config';\r\n\r\ndiv.interaction-zone {\r\n    width: 100%;\r\n    height: 100%;\r\n    display: flex;\r\n    flex-flow: row wrap;\r\n    align-items: center;\r\n    justify-content: center;\r\n    background-color: config.$primary-color;\r\n}","$primary-color: rgb(252, 239, 220); \r\n$accent-color: rgb(93, 236, 170);","@use 'config'; \r\n\r\ndiv.battleship-board{\r\n    display: grid;\r\n    grid-template-columns: 0.1fr 1.9fr 1fr; \r\n    grid-template-rows: 0.1fr 1.9fr 1fr; \r\n    gap: 0px 0px; \r\n    grid-template-areas: \r\n      \". X-AXIS X-AXIS\"\r\n      \"Y-AXIS BOARD BOARD\"\r\n      \"Y-AXIS BOARD BOARD\"; \r\n    width: 650px;\r\n    height: 650px;\r\n    padding: 2px;\r\n    background-color: config.$accent-color;\r\n\r\n    .x-axis{\r\n        display: flex;\r\n        grid-area: X-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .x-axis-element{\r\n            margin: 0 1px;\r\n            width: 60.83px;\r\n            height: 100%;\r\n            background-color: aqua;\r\n            text-align: center;\r\n        }\r\n    }\r\n\r\n    .y-axis{\r\n        display: flex;\r\n        flex-direction: column;\r\n        grid-area: Y-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .y-axis-element{\r\n            margin: 1px 0;\r\n            width: 100%;\r\n            height: 60.83px;\r\n            background-color: aqua;\r\n            text-align: center;\r\n            line-height: 60.83px;\r\n        }\r\n    }\r\n\r\n    .board{\r\n        display: grid;\r\n        grid-template-columns: repeat(10, 1fr);\r\n        grid-template-rows: repeat(10, 1fr);\r\n        grid-area: BOARD;\r\n        gap: 2px;\r\n        background-color: black;\r\n        padding: 1px;\r\n\r\n        .board-element{\r\n            background-color: red;\r\n        }\r\n    }\r\n\r\n\r\n}\r\n\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -974,4 +1026,4 @@ module.exports = styleTagTransform;
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=page44e319e4c3b56f81305d.js.map
+//# sourceMappingURL=page3e63dc921abb2bbd6e32.js.map
