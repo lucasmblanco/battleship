@@ -48,6 +48,14 @@ div.container-game-actions{
     width: 100%;
     height: 26px;
     background-color: blueviolet; 
+
+    &:hover{
+        background-color: black;
+    }
+
+    &:focus-within{
+        background-color: pink
+    }
 }
 
 .ship{
@@ -55,4 +63,7 @@ div.container-game-actions{
     width: 22px;
     height: 22px;
     background-color:darkgreen; 
+
+    
 }
+

@@ -9,5 +9,4 @@ const assignListenerPerElement = (container, functionality) => {
 }
 
 
-
 export {assignListener, assignListenerPerElement, } 
