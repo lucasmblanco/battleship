@@ -35,36 +35,28 @@ var assignListenerPerElement = function assignListenerPerElement(container, func
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "coordenatesElection": () => (/* binding */ coordenatesElection),
-/* harmony export */   "playerShipFunctionality": () => (/* binding */ playerShipFunctionality)
+/* harmony export */   "assignListenerToBoard": () => (/* binding */ assignListenerToBoard)
 /* harmony export */ });
 /* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
 
 
-var playerShipFunctionality = function playerShipFunctionality(event, board) {
-  var numberID = event.target.id; // const newBoard = board; 
-  //  console.log(newBoard)
-
+var assignListenerToBoard = function assignListenerToBoard(event, board) {
+  var numberID = Number(event.target.id);
   var boardElements = document.querySelectorAll('div.player');
   boardElements.forEach(function (element) {
-    element.addEventListener('click', function (e) {
-      coordenatesElection(e, board, numberID);
+    element.removeEventListener('click', element.fn);
+    element.addEventListener('click', element.fn = function (e) {
+      assignPositionAndDeleteInteraction(e, board, numberID, boardElements);
     }, {
       once: true
     });
   });
 };
 
-var coordenatesElection = function coordenatesElection(event, board, numberID) {
-  board.assignShipPosition(Number(numberID), event.target.dataset.x, event.target.dataset.y);
-  console.log(board.showSelectedShip(Number(numberID)));
+var assignPositionAndDeleteInteraction = function assignPositionAndDeleteInteraction(event, board, numberID) {
+  board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y));
+  _interface__WEBPACK_IMPORTED_MODULE_0__.deleteBoardInteraction();
 };
-/*
-const elementSelection = (element, position) => {
-
-}
-*/
-
 
 
 
@@ -113,7 +105,7 @@ var gameboard = function gameboard() {
   };
 
   var assignShipPosition = function assignShipPosition(index, x, y) {
-    return shipsOnBoard[index].composePosition(x, y);
+    return shipsOnBoard[index].fillComposition(x, y);
   };
 
   var receiveAttack = function receiveAttack(x, y) {
@@ -220,6 +212,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "appendShip": () => (/* binding */ appendShip),
 /* harmony export */   "boardElementsFunctionality": () => (/* binding */ boardElementsFunctionality),
+/* harmony export */   "deleteBoardInteraction": () => (/* binding */ deleteBoardInteraction),
 /* harmony export */   "shipElementFunctionality": () => (/* binding */ shipElementFunctionality),
 /* harmony export */   "shipElements": () => (/* binding */ shipElements),
 /* harmony export */   "showPlayerShips": () => (/* binding */ showPlayerShips)
@@ -290,11 +283,10 @@ var assignXY = function assignXY(container, y) {
 };
 
 var shipElementFunctionality = function shipElementFunctionality(board) {
-  // console.log(board)
   var playerShips = document.querySelectorAll('div.ship-cell');
   playerShips.forEach(function (element) {
     element.addEventListener('click', function (e) {
-      _functionality__WEBPACK_IMPORTED_MODULE_1__.playerShipFunctionality(e, board);
+      _functionality__WEBPACK_IMPORTED_MODULE_1__.assignListenerToBoard(e, board);
     }, {
       once: true
     });
@@ -306,6 +298,13 @@ var showPlayerShips = function showPlayerShips(board) {
   var playerShipsBoard = board.showBoard();
   playerShipsBoard.forEach(function (element, index) {
     appendShip(shipsContainer, shipElements(element.length, index));
+  });
+};
+
+var deleteBoardInteraction = function deleteBoardInteraction() {
+  var boardElements = document.querySelectorAll('div.player');
+  boardElements.forEach(function (element) {
+    element.removeEventListener('click', element.fn);
   });
 };
 
@@ -353,22 +352,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var ship = function ship(length) {
   var shipComposition = [];
+  createComposition(length);
 
-  for (var i = 0; i < length; i++) {
-    shipComposition.push({
-      'x': '',
-      'y': ''
-    });
+  function createComposition(length) {
+    for (var i = 0; i < length; i++) {
+      shipComposition.push({
+        'x': '',
+        'y': ''
+      });
+    }
   }
 
   var showComposition = function showComposition() {
     return shipComposition;
   };
 
-  var composePosition = function composePosition(x, y) {
-    for (var _i = 0; _i < shipComposition.length; _i++) {
-      shipComposition[_i].x = x + _i;
-      shipComposition[_i].y = y;
+  var fillComposition = function fillComposition(x, y) {
+    if (x + shipComposition.length > 11) return;
+
+    for (var i = 0; i < shipComposition.length; i++) {
+      shipComposition[i].x = x + i;
+      shipComposition[i].y = y;
     }
   };
   /*
@@ -404,9 +408,10 @@ var ship = function ship(length) {
   };
 
   return {
+    createComposition: createComposition,
     showComposition: showComposition,
     sayLength: sayLength,
-    composePosition: composePosition,
+    fillComposition: fillComposition,
     hit: hit,
     isSunk: isSunk
   };
@@ -1026,4 +1031,4 @@ module.exports = styleTagTransform;
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=page3e63dc921abb2bbd6e32.js.map
+//# sourceMappingURL=page0f12e678bf10913c881b.js.map
