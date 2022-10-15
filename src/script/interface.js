@@ -7,6 +7,7 @@ const shipElements = (shipComposition, index) => {
     const shipContainer = document.createElement('div'); 
     shipContainer.classList.add('ship-cell');
     shipContainer.setAttribute('id', index); 
+    shipContainer.setAttribute('data-length', shipComposition); 
   //  EventManagment.assignListenerPerElement(shipContainer, Functionality.playerShipFunctionality)
     createIndividualParts(shipContainer, shipComposition)
     return shipContainer; 
@@ -88,6 +89,18 @@ const deleteBoardInteraction = () => {
     boardElements.forEach(element => {
         element.removeEventListener('click', element.fn)
     })
+    return true; 
 }
 
-export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, deleteBoardInteraction }
+
+const shipLocationOnBoard = (index, shipComposition) => {
+    const boardElements = document.querySelectorAll('div.player');
+    const composition = shipComposition; 
+    for(let i = 0; i < composition; i++){
+        boardElements[index + i].classList.add('ship-on-water')
+    }
+
+
+}
+
+export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, deleteBoardInteraction, shipLocationOnBoard }

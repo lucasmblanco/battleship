@@ -25,7 +25,7 @@ const gameboard = () => {
     }
 
     const assignShipPosition = (index, x, y) => {
-        return shipsOnBoard[index].fillComposition(x, y); 
+        return shipsOnBoard[index].fillComposition(x, y);
     }
 
     const receiveAttack = (x,y) => { 

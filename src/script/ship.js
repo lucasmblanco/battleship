@@ -16,17 +16,10 @@ const ship = (length) => {
     const fillComposition = (x,y) => {
         if( x + shipComposition.length > 11) return 
         for(let i = 0; i < shipComposition.length; i++) {
-            
             shipComposition[i].x = x + i;
             shipComposition[i].y = y;
-            
-           
-            
         }
-
-
-
-        
+        return true;   
     }
 
     /*
