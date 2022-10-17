@@ -89,7 +89,6 @@ const deleteBoardInteraction = () => {
     boardElements.forEach(element => {
         element.removeEventListener('click', element.fn)
     })
-    return true; 
 }
 
 

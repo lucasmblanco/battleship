@@ -36,7 +36,9 @@ const preGame = () => {
 }
 
 
-const startGame = () => {
+const startGame = (playerBoard, computerBoard) => {
+
+    
     console.log('hola')
 }
 
