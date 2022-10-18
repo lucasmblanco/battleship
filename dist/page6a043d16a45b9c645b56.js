@@ -48,7 +48,7 @@ var assignListenerToBoard = function assignListenerToBoard(event, board) {
     element.addEventListener('click', element.fn = function (e) {
       var status = assignPositionAndDeleteInteraction(e, board, numberID, boardElements);
 
-      if (status === 'Assigned with success') {
+      if (status !== 'Not assigned') {
         _interface__WEBPACK_IMPORTED_MODULE_0__.shipLocationOnBoard(index, event.target.dataset.length);
         _interface__WEBPACK_IMPORTED_MODULE_0__.deleteBoardInteraction();
       }
@@ -57,7 +57,8 @@ var assignListenerToBoard = function assignListenerToBoard(event, board) {
 };
 
 var assignPositionAndDeleteInteraction = function assignPositionAndDeleteInteraction(event, board, numberID) {
-  var status = board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y));
+  var status = board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y)); //console.log(status)
+
   return status;
 };
 
@@ -83,8 +84,7 @@ var gameboard = function gameboard() {
   var missedShots = [];
 
   var showSelectedShip = function showSelectedShip(index) {
-    if (typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition();
-    return;
+    if (typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition(); // return 
   };
 
   var showBoard = function showBoard() {
@@ -107,8 +107,48 @@ var gameboard = function gameboard() {
     }
   };
 
+  var objectsEqual = function objectsEqual(o1, o2) {
+    return Object.keys(o1).length === Object.keys(o2).length && Object.keys(o1).every(function (p) {
+      return o1[p] === o2[p];
+    });
+  };
+
+  var deletePosition = function deletePosition(arr, index) {
+    arr.length = index;
+    return arr;
+  };
+
   var assignShipPosition = function assignShipPosition(index, x, y) {
-    return shipsOnBoard[index].fillComposition(x, y);
+    // console.log(showSelectedShip(index)); 
+    //shipsOnBoard.forEach(element => board.push(element.showComposition())); 
+    //console.log(board)
+    var newShip = shipsOnBoard[index].fillComposition(x, y);
+
+    if (Array.isArray(newShip) && index !== 0) {
+      var board = deletePosition(showBoard(), index); // console.log(board); 
+      //console.log(board); 
+      //assignShipPosition.some(parts => parts.includes)
+      //assignedStatus.some(ship => board.some(shipBoard => objectsEqual(ship, shipBoard))) ? 'Not assigned' : assignedStatus
+      //console.log(assignedStatus);
+
+      var status = newShip.some(function (newPositions) {
+        return board.some(function (ships) {
+          return ships.some(function (shipPositions) {
+            return objectsEqual(newPositions, shipPositions);
+          });
+        });
+      }); // console.log(assignedStatus);
+
+      if (status) {
+        //console.log(board); 
+        shipsOnBoard[index].eraseComposition(); // console.log(assignedStatus);
+
+        return 'Not assigned';
+      } //newB.some(elementB => newA.some(elementA=> objectsEqual(elementB, elementA))) 
+
+    }
+
+    return newShip;
   };
 
   var receiveAttack = function receiveAttack(x, y) {
@@ -138,6 +178,15 @@ var gameboard = function gameboard() {
     return result === true ? 'All ships are lost!' : null;
   };
 
+  var computerAssignShipPosition = function computerAssignShipPosition(computer) {
+    for (var i = 0; i < 5; i++) {
+      var newShip = assignShipPosition(i, computer.generateRandomNumber(), computer.generateRandomNumber());
+      if (newShip === 'Not assigned') newShip = assignShipPosition(i, computer.generateRandomNumber(), computer.generateRandomNumber());
+    }
+
+    console.log(showBoard());
+  };
+
   return {
     assignShipPosition: assignShipPosition,
     receiveAttack: receiveAttack,
@@ -145,7 +194,8 @@ var gameboard = function gameboard() {
     showSelectedShip: showSelectedShip,
     showMissedShots: showMissedShots,
     checkShipStatus: checkShipStatus,
-    showBoard: showBoard
+    showBoard: showBoard,
+    computerAssignShipPosition: computerAssignShipPosition
   };
 };
 
@@ -165,9 +215,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "startGame": () => (/* binding */ startGame)
 /* harmony export */ });
 /* harmony import */ var _gameboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameboard */ "./src/script/gameboard.js");
-/* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
-/* harmony import */ var _eventsManagment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./eventsManagment */ "./src/script/eventsManagment.js");
-/* harmony import */ var _functionality__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./functionality */ "./src/script/functionality.js");
+/* harmony import */ var _player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player */ "./src/script/player.js");
+/* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
+/* harmony import */ var _eventsManagment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./eventsManagment */ "./src/script/eventsManagment.js");
+/* harmony import */ var _functionality__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./functionality */ "./src/script/functionality.js");
+
 
 
 
@@ -176,8 +228,11 @@ __webpack_require__.r(__webpack_exports__);
 var preGame = function preGame() {
   var playerGameboard = (0,_gameboard__WEBPACK_IMPORTED_MODULE_0__["default"])();
   var computerBoard = (0,_gameboard__WEBPACK_IMPORTED_MODULE_0__["default"])();
+  var newPlayer = (0,_player__WEBPACK_IMPORTED_MODULE_1__["default"])();
+  var computer = (0,_player__WEBPACK_IMPORTED_MODULE_1__["default"])();
   playerGameboard.createShips();
-  computerBoard.createShips(); // interfaceManagment.showPlayerShips(playerGameboard); 
+  computerBoard.createShips();
+  computerBoard.computerAssignShipPosition(computer); // interfaceManagment.showPlayerShips(playerGameboard); 
   //interfaceManagment.shipElementFunctionality(); 
   //   playerGameboard.assignShipPosition()
 
@@ -354,6 +409,42 @@ _interface__WEBPACK_IMPORTED_MODULE_2__.boardElementsFunctionality(); //boardEle
 
 /***/ }),
 
+/***/ "./src/script/player.js":
+/*!******************************!*\
+  !*** ./src/script/player.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var Player = function Player() {
+  var attackEnemyBoard = function attackEnemyBoard(board, x, y) {
+    if (!x && !y) return board.receiveAttack(generateRandomNumber(), generateRandomNumber());
+    return board.receiveAttack(x, y);
+  };
+
+  var generateRandomNumber = function generateRandomNumber() {
+    return Math.floor(Math.random() * 10);
+  };
+  /*
+  const computerAttack = (board) => {
+      return board.receiveAttack(generateRandomNumber(),generateRandomNumber())
+  }
+  */
+
+
+  return {
+    attackEnemyBoard: attackEnemyBoard,
+    generateRandomNumber: generateRandomNumber
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Player);
+
+/***/ }),
+
 /***/ "./src/script/ship.js":
 /*!****************************!*\
   !*** ./src/script/ship.js ***!
@@ -389,7 +480,14 @@ var ship = function ship(length) {
       shipComposition[i].y = y;
     }
 
-    return 'Assigned with success';
+    return shipComposition;
+  };
+
+  var eraseComposition = function eraseComposition() {
+    for (var i = 0; i < shipComposition.length; i++) {
+      shipComposition[i].x = "";
+      shipComposition[i].y = "";
+    }
   };
   /*
   const buildShipComposition = (x, y) => {
@@ -429,7 +527,8 @@ var ship = function ship(length) {
     sayLength: sayLength,
     fillComposition: fillComposition,
     hit: hit,
-    isSunk: isSunk
+    isSunk: isSunk,
+    eraseComposition: eraseComposition
   };
 };
 
@@ -1047,4 +1146,4 @@ module.exports = styleTagTransform;
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=page5fcddb8339253c583da1.js.map
+//# sourceMappingURL=page6a043d16a45b9c645b56.js.map

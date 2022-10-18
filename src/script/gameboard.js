@@ -6,8 +6,8 @@ const gameboard = () => {
     const missedShots = []; 
 
     const showSelectedShip = (index) => {
-        if(typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition()
-        return 
+        if(typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition();
+       // return 
     }
        
     const showBoard = () => shipsOnBoard.map(element => element.showComposition());
@@ -24,8 +24,46 @@ const gameboard = () => {
         }
     }
 
+
+    const objectsEqual = (o1, o2) =>
+    Object.keys(o1).length === Object.keys(o2).length 
+        && Object.keys(o1).every(p => o1[p] === o2[p]); 
+    
+
+
+    const deletePosition = (arr, index) => {
+        arr.length = index; 
+        return arr ;
+    } 
+
     const assignShipPosition = (index, x, y) => {
-        return shipsOnBoard[index].fillComposition(x, y);
+       // console.log(showSelectedShip(index)); 
+         
+        //shipsOnBoard.forEach(element => board.push(element.showComposition())); 
+        //console.log(board)
+       const newShip = shipsOnBoard[index].fillComposition(x, y); 
+
+        if(Array.isArray(newShip) && index !== 0){
+            const board = deletePosition(showBoard(), index); 
+           // console.log(board); 
+            //console.log(board); 
+            //assignShipPosition.some(parts => parts.includes)
+            //assignedStatus.some(ship => board.some(shipBoard => objectsEqual(ship, shipBoard))) ? 'Not assigned' : assignedStatus
+            //console.log(assignedStatus);
+            const status = newShip.some(newPositions => board.some(ships => ships.some(shipPositions => objectsEqual(newPositions, shipPositions))));
+             
+           // console.log(assignedStatus);
+            if(status) {
+                //console.log(board); 
+                shipsOnBoard[index].eraseComposition();
+               // console.log(assignedStatus);
+                return 'Not assigned'
+            }
+            //newB.some(elementB => newA.some(elementA=> objectsEqual(elementB, elementA))) 
+
+
+        }
+        return newShip;
     }
 
     const receiveAttack = (x,y) => { 
@@ -43,8 +81,18 @@ const gameboard = () => {
         const result =  shipsOnBoard.every(ship => ship.isSunk() === true)
         return result === true ? 'All ships are lost!' : null
     }
+
+
+    const computerAssignShipPosition = (computer) => {
+        for(let i = 0; i < 5; i++){
+           let newShip = assignShipPosition(i, computer.generateRandomNumber(), computer.generateRandomNumber())
+           if(newShip === 'Not assigned') newShip = assignShipPosition(i, computer.generateRandomNumber(), computer.generateRandomNumber())
+        }
+        console.log(showBoard()); 
+    }
+
     
-    return { assignShipPosition, receiveAttack, createShips, showSelectedShip, showMissedShots, checkShipStatus, showBoard }
+    return { assignShipPosition, receiveAttack, createShips, showSelectedShip, showMissedShots, checkShipStatus, showBoard, computerAssignShipPosition }
 
 }
 

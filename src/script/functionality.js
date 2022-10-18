@@ -9,7 +9,7 @@ const assignListenerToBoard = (event, board) => {
         element.removeEventListener('click', element.fn)
         element.addEventListener('click', element.fn = function(e){
             const status = assignPositionAndDeleteInteraction(e, board, numberID, boardElements);
-            if(status === 'Assigned with success') {
+            if(status !== 'Not assigned') {
                 InterfaceManagment.shipLocationOnBoard(index, event.target.dataset.length);
                 InterfaceManagment.deleteBoardInteraction();
             }
@@ -22,6 +22,7 @@ const assignListenerToBoard = (event, board) => {
 
 const assignPositionAndDeleteInteraction = (event, board, numberID) => {
     const status = board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y));
+    //console.log(status)
     return status;  
 }
 

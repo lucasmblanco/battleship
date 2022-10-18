@@ -27,6 +27,9 @@ test('check if computer can attack player without the needs of coordenates', () 
     expect(playerGameboard.receiveAttack).toHaveBeenCalled()
 })
 
+
+
+
 /*
 
 

@@ -19,7 +19,14 @@ const ship = (length) => {
             shipComposition[i].x = x + i;
             shipComposition[i].y = y;
         }
-        return 'Assigned with success'
+        return shipComposition; 
+    }
+
+    const eraseComposition = () => {
+        for(let i = 0; i < shipComposition.length; i++) {
+            shipComposition[i].x = "";
+            shipComposition[i].y = "";
+        }
     }
 
     /*
@@ -44,7 +51,7 @@ const ship = (length) => {
 
     const isSunk = () => shipComposition.length < 1 
 
-    return { createComposition, showComposition, sayLength, fillComposition, hit, isSunk }
+    return { createComposition, showComposition, sayLength, fillComposition, hit, isSunk, eraseComposition}
 }
 
 export default ship 

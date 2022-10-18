@@ -14,7 +14,7 @@ const Player = () => {
     */
     
 
-    return { attackEnemyBoard }
+    return { attackEnemyBoard, generateRandomNumber }
 }
 
 export default Player

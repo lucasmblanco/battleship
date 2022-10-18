@@ -1,4 +1,5 @@
 import gameboard from "./gameboard"
+import Player from "./player"
 import * as interfaceManagment from "./interface"
 import * as EventManagment from "./eventsManagment"
 import * as Functionality from "./functionality"
@@ -8,8 +9,13 @@ const preGame = () => {
     const playerGameboard = gameboard();
     const computerBoard = gameboard(); 
 
+    const newPlayer = Player(); 
+    const computer = Player(); 
+
     playerGameboard.createShips();
     computerBoard.createShips(); 
+    computerBoard.computerAssignShipPosition(computer); 
+
 
    // interfaceManagment.showPlayerShips(playerGameboard); 
     //interfaceManagment.shipElementFunctionality(); 
