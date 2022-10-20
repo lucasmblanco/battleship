@@ -64,9 +64,7 @@ const assignXY = (container, y) => {
 }
 
 const shipElementFunctionality = (board) => {
-
     const playerShips = document.querySelectorAll('div.ship-cell');
-
     playerShips.forEach(element => {
         element.addEventListener('click', function(e){
             Functionality.panelInteractivity(e, board);
@@ -100,27 +98,17 @@ const shipLocationOnBoard = (index, shipComposition) => {
     }
 }
 
-const computerBoardInteractivity = (computerBoard, playerBoard, player) => {
+const computerBoardInteractivity = (playerBoard, player, computerBoard , computer) => {
    const computerBoardElements = document.querySelectorAll('div.computer');
-   const playerBoardElements = document.querySelectorAll('div.player')
+  
 
 
-    computerBoardElements.forEach(element => { element.addEventListener('click', test, {once: true}) })
+    computerBoardElements.forEach(element => { element.addEventListener('click', function(e){
+        Functionality.computerElementsInteractivity(e,playerBoard,player, computerBoard, computer); 
+    }, {once: true}) })
         // LA FUNCION TEST VA A IR EN FUNCTIONALITY.JS CON LA IMPLEMENTACION PARECIDA A LA OTRA 
-    function test(event){
-        if(!playerBoard.statusOfShips()){
-            const playerAttackStatus = player.attackEnemyBoard(computerBoard,Number(event.target.dataset.x), Number(event.target.dataset.y));
-            hitIndication(event.target, playerAttackStatus);
-
-            //AÑARDIR VISUALIZASION DEL ATAQUE CUANDO ES ERRADO Y CUANDO PEGA; \
-            // crear function en player que se fije si hundio todos los barcos del tablero contrario; 
-            
-
-            //COMPUTADORA
-           // const computerAttackStatus = enemy.attackEnemyBoard(playerBoard); 
-           // hitIndication(event.target, computerAttackStatus);
-        }
-    }
+    
+    
 } 
     
 const hitIndication = (element, hit) => {
@@ -129,4 +117,22 @@ const hitIndication = (element, hit) => {
 }
 
 
-export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, deleteBoardInteraction, shipLocationOnBoard, computerBoardInteractivity }
+const hitIndicationComputer = (positionX, positionY, hit) => {
+    const playerBoardElements = document.querySelectorAll('div.player'); 
+    const arrayplayerBoardElements = Array.from(playerBoardElements);
+
+    const index = arrayplayerBoardElements.findIndex(element => {
+        return Number(element.dataset.x) === positionX && Number(element.dataset.y) === positionY
+    })
+
+    if(hit === 'You miss the shot!' && !playerBoardElements[index].classList.contains('hit')) playerBoardElements[index].classList.add('miss'); 
+    else if(!playerBoardElements[index].classList.contains('miss')) playerBoardElements[index].classList.add('hit'); 
+
+}
+
+const matchStatus = (status) => {
+    if(status) console.log('GANASTEEEEEE!!!!!!!!!!!!!!!');
+}
+
+export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, 
+    deleteBoardInteraction, shipLocationOnBoard, computerBoardInteractivity, hitIndication, hitIndicationComputer, matchStatus}

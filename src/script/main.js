@@ -13,7 +13,7 @@ const startBattleship = () => {
     const newGame = Gameloop.preGame(); 
   InterfaceManagment.showPlayerShips(newGame.playerGameboard); 
   InterfaceManagment.shipElementFunctionality(newGame.playerGameboard); 
-  InterfaceManagment.computerBoardInteractivity(newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); 
+  InterfaceManagment.computerBoardInteractivity(newGame.playerGameboard,newGame.newPlayer, newGame.computerBoard, newGame.computer); 
   //InterfaceManagment.computerBoardInteractivity(newGame.computer, newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); 
 
 

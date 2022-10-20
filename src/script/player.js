@@ -1,27 +1,32 @@
 const Player = () => {
     
     const attackEnemyBoard = (board, x, y) => {
-        if(!x && !y) return board.receiveAttack(generateRandomNumber(), generateRandomNumber());
+        /*
+        if(!x && !y) {
+            const positionX = generateRandomNumber(); 
+            const positionY =  generateRandomNumber()
+
+            return board.receiveAttack(positionX, positionY);
+        }
+        */
         return board.receiveAttack(x,y); 
     }
 
     const generateRandomNumber = (shipComposition) =>{
         let randomNumber = Math.floor(Math.random() * 10) + 1; 
         if(shipComposition + randomNumber >= 11) {
-            console.log('FUNCTION ACTIVADA!')
-            randomNumber = Math.floor(Math.random() * (10 - shipComposition)) + 1; 
+          //  console.log('FUNCTION ACTIVADA!')
+            randomNumber = Math.floor(Math.random() * (9 - shipComposition)) + 1; 
         }
         return randomNumber;
     }
 
-    /*
-    const computerAttack = (board) => {
-        return board.receiveAttack(generateRandomNumber(),generateRandomNumber())
+    const shipsDestroyed = (board) => {
+        return board.checkShipStatus(); 
     }
-    */
-    
 
-    return { attackEnemyBoard, generateRandomNumber }
+
+    return { attackEnemyBoard, generateRandomNumber, shipsDestroyed }
 }
 
 export default Player

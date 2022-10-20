@@ -91,10 +91,10 @@ const gameboard = () => {
     const computerAssignShipPosition = (computer) => {
         const helper = 5
         for(let i = 0; i < 5; i++){
-            console.log(helper - i)
-            let newShip = assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true)
+           // console.log(helper - i)
+            assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true)
             //SI OPT ES TRUE... 1# AGREGAR OPT A ASSIGN 
-            if(newShip === 'Not assigned') newShip = assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true)
+            //if(newShip === 'Not assigned') newShip = assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true)
         }
         console.log(showBoard()); 
     }

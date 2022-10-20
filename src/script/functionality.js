@@ -1,4 +1,5 @@
 import * as InterfaceManagment from "./interface"
+import Player from "./player";
 
 
 
@@ -33,9 +34,31 @@ const assignPositionAndDeleteInteraction = (event, board, numberID) => {
 }
 
 
+const computerElementsInteractivity = (event, playerBoard, player, computerBoard, computer ) => { 
+    if(!playerBoard.statusOfShips()){
+        const playerAttackStatus = player.attackEnemyBoard(computerBoard,Number(event.target.dataset.x), Number(event.target.dataset.y));
+        InterfaceManagment.hitIndication(event.target, playerAttackStatus);
+        InterfaceManagment.matchStatus(player.shipsDestroyed(computerBoard)); 
+
+        //AÑARDIR VISUALIZASION DEL ATAQUE CUANDO ES ERRADO Y CUANDO PEGA; \
+        // crear function en player que se fije si hundio todos los barcos del tablero contrario; 
+        
+
+        //COMPUTADORA
+        const positionX = computer.generateRandomNumber(); 
+        const positionY = computer.generateRandomNumber();
+        const computerAttackStatus = computer.attackEnemyBoard(playerBoard, positionX, positionY); 
+        InterfaceManagment.hitIndicationComputer(positionX, positionY, computerAttackStatus)
+        InterfaceManagment.matchStatus(computer.shipsDestroyed(playerBoard)); 
+       // hitIndication(event.target, computerAttackStatus);
+
+    }
+
+}
+
 const recievePlayerAttack = (event, player) => {
 
 }
 
 
-export { panelInteractivity, recievePlayerAttack }
+export { panelInteractivity, recievePlayerAttack, computerElementsInteractivity }
