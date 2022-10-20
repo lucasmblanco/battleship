@@ -17,6 +17,7 @@ const preGame = () => {
     computerBoard.computerAssignShipPosition(computer); 
 
 
+
    // interfaceManagment.showPlayerShips(playerGameboard); 
     //interfaceManagment.shipElementFunctionality(); 
 
@@ -37,7 +38,7 @@ const preGame = () => {
 
 
 
-    return {playerGameboard, computerBoard}
+    return {playerGameboard, computerBoard, newPlayer, computer}
 
 }
 

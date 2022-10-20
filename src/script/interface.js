@@ -29,9 +29,9 @@ const appendShip = (container, element) => {
 }
 
 // Añade functionalidad a los dos paneles
-const boardElementsFunctionality = () => {
-    const playerBoardElements = document.querySelectorAll('div.player');
-    playerBoardListenerAndCoordenates(playerBoardElements); 
+const boardElementsFunctionality = (board) => {
+  //  const playerBoardElements = document.querySelectorAll('div.player');
+    playerBoardListenerAndCoordenates(board); 
 }
 
 // añade funcionalidad y coordenadas al panel del jugador 
@@ -69,7 +69,7 @@ const shipElementFunctionality = (board) => {
 
     playerShips.forEach(element => {
         element.addEventListener('click', function(e){
-            Functionality.assignListenerToBoard(e, board);
+            Functionality.panelInteractivity(e, board);
         }, {once: true})
     })
 }
@@ -98,8 +98,35 @@ const shipLocationOnBoard = (index, shipComposition) => {
     for(let i = 0; i < composition; i++){
         boardElements[index + i].classList.add('ship-on-water')
     }
-
-
 }
 
-export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, deleteBoardInteraction, shipLocationOnBoard }
+const computerBoardInteractivity = (computerBoard, playerBoard, player) => {
+   const computerBoardElements = document.querySelectorAll('div.computer');
+   const playerBoardElements = document.querySelectorAll('div.player')
+
+
+    computerBoardElements.forEach(element => { element.addEventListener('click', test, {once: true}) })
+        // LA FUNCION TEST VA A IR EN FUNCTIONALITY.JS CON LA IMPLEMENTACION PARECIDA A LA OTRA 
+    function test(event){
+        if(!playerBoard.statusOfShips()){
+            const playerAttackStatus = player.attackEnemyBoard(computerBoard,Number(event.target.dataset.x), Number(event.target.dataset.y));
+            hitIndication(event.target, playerAttackStatus);
+
+            //AÑARDIR VISUALIZASION DEL ATAQUE CUANDO ES ERRADO Y CUANDO PEGA; \
+            // crear function en player que se fije si hundio todos los barcos del tablero contrario; 
+            
+
+            //COMPUTADORA
+           // const computerAttackStatus = enemy.attackEnemyBoard(playerBoard); 
+           // hitIndication(event.target, computerAttackStatus);
+        }
+    }
+} 
+    
+const hitIndication = (element, hit) => {
+    if(hit === 'You miss the shot!' && !element.classList.contains('hit')) element.classList.add('miss'); 
+    else if(!element.classList.contains('miss')) element.classList.add('hit'); 
+}
+
+
+export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, deleteBoardInteraction, shipLocationOnBoard, computerBoardInteractivity }

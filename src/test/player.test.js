@@ -5,6 +5,8 @@ import gameboard from '../script/gameboard';
 // create player and gameboard
 const newPlayer = player(); 
 const playerGameboard = gameboard(); 
+playerGameboard.createShips(); 
+playerGameboard.assignShipPosition(0,0,0); 
 
 
 //create computer and gameboard
@@ -26,9 +28,6 @@ test('check if computer can attack player without the needs of coordenates', () 
     computerPlayer.attackEnemyBoard(playerGameboard)
     expect(playerGameboard.receiveAttack).toHaveBeenCalled()
 })
-
-
-
 
 /*
 

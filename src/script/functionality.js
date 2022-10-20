@@ -2,7 +2,7 @@ import * as InterfaceManagment from "./interface"
 
 
 
-const assignListenerToBoard = (event, board) => {
+const panelInteractivity = (event, board) => {
     const boardElements = document.querySelectorAll('div.player'); 
     const numberID = Number(event.target.id); 
     boardElements.forEach((element, index) => {
@@ -13,6 +13,13 @@ const assignListenerToBoard = (event, board) => {
                 InterfaceManagment.shipLocationOnBoard(index, event.target.dataset.length);
                 InterfaceManagment.deleteBoardInteraction();
             }
+            /*
+            if(status === 'All ships have been assigned'){
+                InterfaceManagment.shipLocationOnBoard(index, event.target.dataset.length);
+                InterfaceManagment.deleteBoardInteraction();
+                InterfaceManagment.computerBoardInteractivity(); 
+            }
+            */
             
         })
     })
@@ -21,9 +28,14 @@ const assignListenerToBoard = (event, board) => {
 
 
 const assignPositionAndDeleteInteraction = (event, board, numberID) => {
-    const status = board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y));
-    //console.log(status)
+    const status = board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y)); 
     return status;  
 }
 
-export { assignListenerToBoard }
+
+const recievePlayerAttack = (event, player) => {
+
+}
+
+
+export { panelInteractivity, recievePlayerAttack }
