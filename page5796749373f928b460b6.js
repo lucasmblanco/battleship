@@ -35,10 +35,13 @@ var assignListenerPerElement = function assignListenerPerElement(container, func
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "computerElementsInteractivity": () => (/* binding */ computerElementsInteractivity),
 /* harmony export */   "panelInteractivity": () => (/* binding */ panelInteractivity),
 /* harmony export */   "recievePlayerAttack": () => (/* binding */ recievePlayerAttack)
 /* harmony export */ });
 /* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
+/* harmony import */ var _player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player */ "./src/script/player.js");
+
 
 
 var panelInteractivity = function panelInteractivity(event, board) {
@@ -68,6 +71,22 @@ var panelInteractivity = function panelInteractivity(event, board) {
 var assignPositionAndDeleteInteraction = function assignPositionAndDeleteInteraction(event, board, numberID) {
   var status = board.assignShipPosition(numberID, Number(event.target.dataset.x), Number(event.target.dataset.y));
   return status;
+};
+
+var computerElementsInteractivity = function computerElementsInteractivity(event, playerBoard, player, computerBoard, computer) {
+  if (!playerBoard.statusOfShips()) {
+    var playerAttackStatus = player.attackEnemyBoard(computerBoard, Number(event.target.dataset.x), Number(event.target.dataset.y));
+    _interface__WEBPACK_IMPORTED_MODULE_0__.hitIndication(event.target, playerAttackStatus);
+    _interface__WEBPACK_IMPORTED_MODULE_0__.matchStatus(player.shipsDestroyed(computerBoard)); //AÑARDIR VISUALIZASION DEL ATAQUE CUANDO ES ERRADO Y CUANDO PEGA; \
+    // crear function en player que se fije si hundio todos los barcos del tablero contrario; 
+    //COMPUTADORA
+
+    var positionX = computer.generateRandomNumber();
+    var positionY = computer.generateRandomNumber();
+    var computerAttackStatus = computer.attackEnemyBoard(playerBoard, positionX, positionY);
+    _interface__WEBPACK_IMPORTED_MODULE_0__.hitIndicationComputer(positionX, positionY, computerAttackStatus);
+    _interface__WEBPACK_IMPORTED_MODULE_0__.matchStatus(computer.shipsDestroyed(playerBoard)); // hitIndication(event.target, computerAttackStatus);
+  }
 };
 
 var recievePlayerAttack = function recievePlayerAttack(event, player) {};
@@ -200,10 +219,9 @@ var gameboard = function gameboard() {
     var helper = 5;
 
     for (var i = 0; i < 5; i++) {
-      console.log(helper - i);
-      var newShip = assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true); //SI OPT ES TRUE... 1# AGREGAR OPT A ASSIGN 
-
-      if (newShip === 'Not assigned') newShip = assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true);
+      // console.log(helper - i)
+      assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true); //SI OPT ES TRUE... 1# AGREGAR OPT A ASSIGN 
+      //if(newShip === 'Not assigned') newShip = assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true)
     }
 
     console.log(showBoard());
@@ -297,6 +315,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "boardElementsFunctionality": () => (/* binding */ boardElementsFunctionality),
 /* harmony export */   "computerBoardInteractivity": () => (/* binding */ computerBoardInteractivity),
 /* harmony export */   "deleteBoardInteraction": () => (/* binding */ deleteBoardInteraction),
+/* harmony export */   "hitIndication": () => (/* binding */ hitIndication),
+/* harmony export */   "hitIndicationComputer": () => (/* binding */ hitIndicationComputer),
+/* harmony export */   "matchStatus": () => (/* binding */ matchStatus),
 /* harmony export */   "shipElementFunctionality": () => (/* binding */ shipElementFunctionality),
 /* harmony export */   "shipElements": () => (/* binding */ shipElements),
 /* harmony export */   "shipLocationOnBoard": () => (/* binding */ shipLocationOnBoard),
@@ -403,29 +424,32 @@ var shipLocationOnBoard = function shipLocationOnBoard(index, shipComposition) {
   }
 };
 
-var computerBoardInteractivity = function computerBoardInteractivity(computerBoard, playerBoard, player) {
+var computerBoardInteractivity = function computerBoardInteractivity(playerBoard, player, computerBoard, computer) {
   var computerBoardElements = document.querySelectorAll('div.computer');
-  var playerBoardElements = document.querySelectorAll('div.player');
   computerBoardElements.forEach(function (element) {
-    element.addEventListener('click', test, {
+    element.addEventListener('click', function (e) {
+      _functionality__WEBPACK_IMPORTED_MODULE_1__.computerElementsInteractivity(e, playerBoard, player, computerBoard, computer);
+    }, {
       once: true
     });
   }); // LA FUNCION TEST VA A IR EN FUNCTIONALITY.JS CON LA IMPLEMENTACION PARECIDA A LA OTRA 
-
-  function test(event) {
-    if (!playerBoard.statusOfShips()) {
-      var playerAttackStatus = player.attackEnemyBoard(computerBoard, Number(event.target.dataset.x), Number(event.target.dataset.y));
-      hitIndication(event.target, playerAttackStatus); //AÑARDIR VISUALIZASION DEL ATAQUE CUANDO ES ERRADO Y CUANDO PEGA; \
-      // crear function en player que se fije si hundio todos los barcos del tablero contrario; 
-      //COMPUTADORA
-      // const computerAttackStatus = enemy.attackEnemyBoard(playerBoard); 
-      // hitIndication(event.target, computerAttackStatus);
-    }
-  }
 };
 
 var hitIndication = function hitIndication(element, hit) {
   if (hit === 'You miss the shot!' && !element.classList.contains('hit')) element.classList.add('miss');else if (!element.classList.contains('miss')) element.classList.add('hit');
+};
+
+var hitIndicationComputer = function hitIndicationComputer(positionX, positionY, hit) {
+  var playerBoardElements = document.querySelectorAll('div.player');
+  var arrayplayerBoardElements = Array.from(playerBoardElements);
+  var index = arrayplayerBoardElements.findIndex(function (element) {
+    return Number(element.dataset.x) === positionX && Number(element.dataset.y) === positionY;
+  });
+  if (hit === 'You miss the shot!' && !playerBoardElements[index].classList.contains('hit')) playerBoardElements[index].classList.add('miss');else if (!playerBoardElements[index].classList.contains('miss')) playerBoardElements[index].classList.add('hit');
+};
+
+var matchStatus = function matchStatus(status) {
+  if (status) console.log('GANASTEEEEEE!!!!!!!!!!!!!!!');
 };
 
 
@@ -454,7 +478,7 @@ var startBattleship = function startBattleship() {
   var newGame = _gameloop__WEBPACK_IMPORTED_MODULE_1__.preGame();
   _interface__WEBPACK_IMPORTED_MODULE_2__.showPlayerShips(newGame.playerGameboard);
   _interface__WEBPACK_IMPORTED_MODULE_2__.shipElementFunctionality(newGame.playerGameboard);
-  _interface__WEBPACK_IMPORTED_MODULE_2__.computerBoardInteractivity(newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); //InterfaceManagment.computerBoardInteractivity(newGame.computer, newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); 
+  _interface__WEBPACK_IMPORTED_MODULE_2__.computerBoardInteractivity(newGame.playerGameboard, newGame.newPlayer, newGame.computerBoard, newGame.computer); //InterfaceManagment.computerBoardInteractivity(newGame.computer, newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); 
 };
 
 playButton.addEventListener('click', startBattleship);
@@ -475,7 +499,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var Player = function Player() {
   var attackEnemyBoard = function attackEnemyBoard(board, x, y) {
-    if (!x && !y) return board.receiveAttack(generateRandomNumber(), generateRandomNumber());
+    /*
+    if(!x && !y) {
+        const positionX = generateRandomNumber(); 
+        const positionY =  generateRandomNumber()
+          return board.receiveAttack(positionX, positionY);
+    }
+    */
     return board.receiveAttack(x, y);
   };
 
@@ -483,22 +513,21 @@ var Player = function Player() {
     var randomNumber = Math.floor(Math.random() * 10) + 1;
 
     if (shipComposition + randomNumber >= 11) {
-      console.log('FUNCTION ACTIVADA!');
-      randomNumber = Math.floor(Math.random() * (10 - shipComposition)) + 1;
+      //  console.log('FUNCTION ACTIVADA!')
+      randomNumber = Math.floor(Math.random() * (9 - shipComposition)) + 1;
     }
 
     return randomNumber;
   };
-  /*
-  const computerAttack = (board) => {
-      return board.receiveAttack(generateRandomNumber(),generateRandomNumber())
-  }
-  */
 
+  var shipsDestroyed = function shipsDestroyed(board) {
+    return board.checkShipStatus();
+  };
 
   return {
     attackEnemyBoard: attackEnemyBoard,
-    generateRandomNumber: generateRandomNumber
+    generateRandomNumber: generateRandomNumber,
+    shipsDestroyed: shipsDestroyed
   };
 };
 
@@ -1210,4 +1239,4 @@ module.exports = styleTagTransform;
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=pagee7324bcf4bc2eeb036d1.js.map
+//# sourceMappingURL=page5796749373f928b460b6.js.map
