@@ -5,8 +5,7 @@ import gameboard from '../script/gameboard';
 // create player and gameboard
 const newPlayer = player(); 
 const playerGameboard = gameboard(); 
-playerGameboard.createShips(); 
-playerGameboard.assignShipPosition(0,0,0); 
+
 
 
 //create computer and gameboard
@@ -19,9 +18,19 @@ playerGameboard.receiveAttack = jest.fn();
 
 
 
-test('check if board received the corresponded coordenates of the attack', () => {
+test.only('check if board received the corresponded coordenates of the attack', () => {
     newPlayer.attackEnemyBoard(computerGameboard, 1, 5)
     expect(computerGameboard.receiveAttack).toHaveBeenCalledWith(1, 5)
+});
+
+test.only('check if player already attack that position', () => {
+    newPlayer.searchPreviousActions(1, 5)
+    expect(newPlayer.searchPreviousActions(1, 5)).toBeTruthy(); 
+});
+
+
+test.only('check if player already attack that position (false)', () => {
+    expect(newPlayer.searchPreviousActions(2, 9)).toBeFalsy(); 
 });
 
 test('check if computer can attack player without the needs of coordenates', () => {

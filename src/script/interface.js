@@ -1,4 +1,3 @@
-import * as EventManagment from "./eventsManagment"
 import * as Functionality from "./functionality"
 
 
@@ -72,9 +71,19 @@ const shipElementFunctionality = (board) => {
     })
 }
 
+const removeShipVisualization = (ship) => {
+    const playerShips = document.querySelectorAll('div.ship-cell');
+    const placedMessage = document.createElement('div');
+    placedMessage.classList.add('placed-message'); 
+    placedMessage.textContent = 'ON THE BOARD';
+    playerShips[ship].classList.add('ship-cell-disabled'); 
+    playerShips[ship].replaceChildren(placedMessage); 
+   // playerShips[ship].classList.add('disable');
+}
+
 
 const showPlayerShips = (board) => {
-    const shipsContainer = document.querySelector('div.ships-container'); 
+    const shipsContainer = document.querySelector('div.total-container'); 
     const playerShipsBoard = board.showBoard(); 
     playerShipsBoard.forEach((element, index) => {
         appendShip(shipsContainer, shipElements(element.length, index)); 
@@ -85,7 +94,7 @@ const showPlayerShips = (board) => {
 const deleteBoardInteraction = () => {
     const boardElements = document.querySelectorAll('div.player'); 
     boardElements.forEach(element => {
-        element.removeEventListener('click', element.fn)
+        element.removeEventListener('click', element.fn);
     })
 }
 
@@ -98,13 +107,13 @@ const shipLocationOnBoard = (index, shipComposition) => {
     }
 }
 
-const computerBoardInteractivity = (playerBoard, player, computerBoard , computer) => {
+const computerBoardInteractivity = (playerBoard, player, computerBoard , computer, playerBoardContainer, playerComputerContainer) => {
    const computerBoardElements = document.querySelectorAll('div.computer');
   
 
 
     computerBoardElements.forEach(element => { element.addEventListener('click', function(e){
-        Functionality.computerElementsInteractivity(e,playerBoard,player, computerBoard, computer); 
+        Functionality.computerElementsInteractivity(e,playerBoard,player, computerBoard, computer, playerBoardContainer, playerComputerContainer); 
     }, {once: true}) })
         // LA FUNCION TEST VA A IR EN FUNCTIONALITY.JS CON LA IMPLEMENTACION PARECIDA A LA OTRA 
     
@@ -130,9 +139,52 @@ const hitIndicationComputer = (positionX, positionY, hit) => {
 
 }
 
+
+/*
+
 const matchStatus = (status) => {
     if(status) console.log('GANASTEEEEEE!!!!!!!!!!!!!!!');
 }
 
+*/
+
+const matchStatus = (player, enemyBoard, enemyContainer) => {
+    const EORContainer = document.createElement('div'); 
+    const EORScreen = document.createElement('div'); 
+    const restartButtonContainer = document.createElement('div'); 
+    const restartButton = document.createElement('button'); 
+ 
+    EORContainer.classList.add('eor-container'); 
+    EORScreen.classList.add('eor-screen'); 
+    restartButtonContainer.classList.add('restart-button-container'); 
+    restartButton.classList.add('restart-button'); 
+    restartButton.textContent = 'RESTART'; 
+    restartButton.addEventListener('click', refreshPage)
+    restartButtonContainer.append(restartButton); 
+    EORContainer.append(EORScreen, restartButtonContainer); 
+
+
+    if(player.shipsDestroyed(enemyBoard)) {
+        if(enemyContainer.classList.contains('computer-board')) {
+            enemyContainer.replaceChildren(EORContainer);
+            EORScreen.textContent = 'YOU WON!'
+        } else {
+            enemyContainer.replaceChildren(EORContainer);
+            EORScreen.textContent = 'YOU LOST!';
+            removeListenerFromComputerBoard(); 
+        }
+    }
+}
+
+const refreshPage = () => {
+    location.reload();
+  }
+
+const removeListenerFromComputerBoard = () => {
+    const computerBoardElements = document.querySelectorAll('div.computer'); 
+    computerBoardElements.forEach(element => element.classList.add('disabled-board-elements')); 
+}
+
+
 export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, 
-    deleteBoardInteraction, shipLocationOnBoard, computerBoardInteractivity, hitIndication, hitIndicationComputer, matchStatus}
+    deleteBoardInteraction, shipLocationOnBoard, computerBoardInteractivity, hitIndication, hitIndicationComputer, matchStatus, removeShipVisualization}

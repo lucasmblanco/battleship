@@ -1,2 +1,12 @@
-$primary-color: rgb(252, 239, 220); 
-$accent-color: rgb(93, 236, 170);
+$primary-color: rgba(0, 51, 126, 1); 
+$primary-color-transparency: rgba(0, 51, 126, 0.8); 
+$accent-color: rgba(90, 255, 4, 0.8);
+$accent-color-no-transparency:  rgba(90, 255, 4, 1);
+$primary-font-color: rgba(255, 255, 255, 0.8);
+$background-color: rgba(0, 0, 0, 0.8); 
+$background-color-no-transparency: rgba(0, 0, 0, 1); 
+$background-color-max-transparency: rgba(90, 255, 4, 0.2);
+$hit-on-water: rgba(25, 71, 0, 0.8);
+$hit-on-ship: rgba(255, 56, 0, 0.8);
+$eor-message-red: rgba(255, 56, 0, 1);
+$eor-message-red-max-transparency: rgba(255, 56, 0, 0.2);

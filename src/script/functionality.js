@@ -1,5 +1,5 @@
 import * as InterfaceManagment from "./interface"
-import Player from "./player";
+
 
 
 
@@ -13,6 +13,7 @@ const panelInteractivity = (event, board) => {
             if(status !== 'Not assigned') {
                 InterfaceManagment.shipLocationOnBoard(index, event.target.dataset.length);
                 InterfaceManagment.deleteBoardInteraction();
+                InterfaceManagment.removeShipVisualization(numberID); 
             }
             /*
             if(status === 'All ships have been assigned'){
@@ -34,31 +35,20 @@ const assignPositionAndDeleteInteraction = (event, board, numberID) => {
 }
 
 
-const computerElementsInteractivity = (event, playerBoard, player, computerBoard, computer ) => { 
+const computerElementsInteractivity = (event, playerBoard, player, computerBoard, computer, playerBoardContainer, computerBoardContainer) => { 
     if(!playerBoard.statusOfShips()){
         const playerAttackStatus = player.attackEnemyBoard(computerBoard,Number(event.target.dataset.x), Number(event.target.dataset.y));
+        const computerCoord = computer.generateRandomCoordenates(); 
+        const computerAttackStatus = computer.attackEnemyBoard(playerBoard, computerCoord.positionX, computerCoord.positionY);
+
         InterfaceManagment.hitIndication(event.target, playerAttackStatus);
-        InterfaceManagment.matchStatus(player.shipsDestroyed(computerBoard)); 
-
-        //AÑARDIR VISUALIZASION DEL ATAQUE CUANDO ES ERRADO Y CUANDO PEGA; \
-        // crear function en player que se fije si hundio todos los barcos del tablero contrario; 
-        
-
-        //COMPUTADORA
-        const positionX = computer.generateRandomNumber(); 
-        const positionY = computer.generateRandomNumber();
-        const computerAttackStatus = computer.attackEnemyBoard(playerBoard, positionX, positionY); 
-        InterfaceManagment.hitIndicationComputer(positionX, positionY, computerAttackStatus)
-        InterfaceManagment.matchStatus(computer.shipsDestroyed(playerBoard)); 
-       // hitIndication(event.target, computerAttackStatus);
+        InterfaceManagment.matchStatus(player, computerBoard, computerBoardContainer);
+        InterfaceManagment.hitIndicationComputer(computerCoord.positionX, computerCoord.positionY, computerAttackStatus);
+        InterfaceManagment.matchStatus(computer, playerBoard, playerBoardContainer);
 
     }
 
 }
 
-const recievePlayerAttack = (event, player) => {
 
-}
-
-
-export { panelInteractivity, recievePlayerAttack, computerElementsInteractivity }
+export { panelInteractivity, computerElementsInteractivity }

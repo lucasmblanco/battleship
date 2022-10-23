@@ -3,6 +3,25 @@
 @use 'utilities';
 @use 'battleship-board'; 
 
+@font-face {
+    font-family: 'Grifter Bold';
+    src: url("../assets/grifterbold.otf");
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat Light';
+    src: url('../assets/Montserrat-Light.otf');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Led Panel';
+    src: url('../assets/digital-7\ \(mono\ italic\).ttf');
+}
+
 h1.title {
     display: flex;
     justify-content: center;
@@ -10,6 +29,10 @@ h1.title {
     width: 100vw;
     height: 6vh;
     text-align: center;
+    font-family: 'Grifter Bold', Helvetica;
+    font-size: 3em;
+    color: config.$primary-font-color; 
+    background-color: config.$primary-color;
 }
 
 div.buttons-container{
@@ -18,6 +41,19 @@ div.buttons-container{
     height: 4vh;
     justify-content: center;
     align-items: center;
+    background-color: config.$primary-color;
+
+    .play-button{
+        font-family: 'Montserrat Light';
+        color: white;
+        background-color: config.$primary-color;
+        border: 1px solid rgba(188, 188, 188, 0.8);
+        border-radius: 5px;
+        padding: 4px;
+        width: 80px;
+
+
+    }
 }
 
 main.main-body {
@@ -28,16 +64,50 @@ main.main-body {
 
 div.container-game-actions{
     display: flex;
-    flex-flow: row wrap; 
-    padding: 2px;
-    width: 700px;
-    height: 150px;
+    width: 646px;
+    height: 160px;
+    border-radius: 5px;
+    padding: 10px;
 
-    
+    .panel-container{
+        display: flex;
+        flex-wrap: wrap;
+        background-color: config.$background-color;
+        width: 75%;
+        height: 160px;
+        margin-right: 3px;
+        
+
+        .panel{
+            display: flex;
+            width: 100%;
+            align-items:center;
+            justify-content: center;
+            margin: 1px;
+            padding: 5px;
+            border: 1px solid config.$accent-color;
+            border-radius: 5px;
+            font-family: 'Montserrat-Light', Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            background-color: config.$background-color-max-transparency;
+            color: config.$accent-color;
+        }
+        
+    }
+
+    .total-container{
+        display: flex;
+        flex-flow: row wrap; 
+        width: 25%;
+        height: 160px;
+    }
 }
 
 .ships-container{
-    background-color: red;
+    background-color: config.$background-color-no-transparency;
+    border-radius: 5px;
+
+
 }
 
 .ship-cell{
@@ -47,10 +117,12 @@ div.container-game-actions{
     margin: 2px;
     width: 100%;
     height: 26px;
-    background-color: blueviolet; 
+    border: 0.5px solid config.$background-color;
+    border-radius: 5px; 
 
     &:hover{
-        background-color: black;
+        border: 0.5px solid config.$accent-color;
+        background-color: config.$background-color-max-transparency; 
     }
 
     &:focus-within{
@@ -58,12 +130,82 @@ div.container-game-actions{
     }
 }
 
+.ship-cell-disabled{
+    background-color: config.$primary-color-transparency;
+    pointer-events: none;
+}
+
 .ship{
     margin: 1px;
     width: 22px;
     height: 22px;
-    background-color:darkgreen; 
+    background-color: config.$accent-color; 
     pointer-events: none;
+}
+
+.placed-message{
+    font-family: 'Montserrat Light', Arial, Helvetica, sans-serif;
+    color: white;
+    background-color: none;
+    font-size: 10px;
+    letter-spacing: 3px;
+}
+
+.eor-container{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid config.$hit-on-ship;
+    border-radius: 5px;
+    width: 640px;
+    height: 640px;
+
+    .eor-screen{
+        font-family: 'Grifter Bold', Arial, Helvetica, sans-serif;
+        width: 50%;
+        height: 60px;
+        background-color: config.$eor-message-red-max-transparency;
+        color: config.$eor-message-red;
+        border: 5px solid config.$eor-message-red;
+        border-radius: 5px;
+        font-size: 50px;
+        align-self: flex-end;
+        text-align: center;
+        line-height: 60px;
+    }
+
+    .restart-button-container{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 60px;
+        align-self: flex-start;
+
+        .restart-button{
+            position: relative;
+            padding: 5px;
+            font-family: 'Montserrat-Light', Arial, Helvetica, sans-serif;
+            border: 1px solid config.$eor-message-red; 
+            border-radius: 5px;
+            color: config.$eor-message-red;
+            background-color: config.$background-color;
+
+            &:hover{
+                background-color: config.$hit-on-ship;
+                color: config.$background-color;
+            }
+        }
+    }
     
 }
+
+
+
+
+.disabled-board-elements{
+    pointer-events: none;
+}
+
 

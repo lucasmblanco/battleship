@@ -4,6 +4,7 @@ const gameboard = () => {
 
     const shipsOnBoard = []; 
     const missedShots = []; 
+    const shotHistory = []; 
 
     const showSelectedShip = (index) => {
         if(typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition();
@@ -72,6 +73,9 @@ const gameboard = () => {
     }
 
     const receiveAttack = (x,y) => { 
+
+
+
         const newAttack = shipsOnBoard.some(element => element.hit(x,y));
         if(!newAttack){
             missedShots.push({'x': x, 'y': y});
@@ -81,6 +85,7 @@ const gameboard = () => {
     }
 
     const showMissedShots = () => missedShots; 
+
     
     const checkShipStatus = () => {
         const result =  shipsOnBoard.every(ship => ship.isSunk() === true)
