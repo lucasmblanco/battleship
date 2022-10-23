@@ -4,7 +4,6 @@ import * as InterfaceManagment from "./interface";
 
 
 const playButton = document.querySelector('button.play-button');
-//const shipsContainer = document.querySelector('div.ships-container'); 
 const playerBoardContainer = document.querySelector('div.player-board'); 
 const computerBoardContainer = document.querySelector('div.computer-board')
 const playerBoardElements = document.querySelectorAll('div.player');
@@ -16,14 +15,9 @@ const startBattleship = () => {
   InterfaceManagment.showPlayerShips(newGame.playerGameboard); 
   InterfaceManagment.shipElementFunctionality(newGame.playerGameboard); 
   InterfaceManagment.computerBoardInteractivity(newGame.playerGameboard, newGame.newPlayer, newGame.computerBoard, newGame.computer, playerBoardContainer, computerBoardContainer ); 
-  //InterfaceManagment.computerBoardInteractivity(newGame.computer, newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); 
 }
 
 playButton.addEventListener('click', startBattleship, {once: true});
 InterfaceManagment.boardElementsFunctionality(playerBoardElements); 
 InterfaceManagment.boardElementsFunctionality(computerBoardElements); 
  
-
-
-
-//boardElements.addEventListener('click', selectPosititon)

@@ -47,12 +47,15 @@ div.buttons-container{
         font-family: 'Montserrat Light';
         color: white;
         background-color: config.$primary-color;
-        border: 1px solid rgba(188, 188, 188, 0.8);
-        border-radius: 5px;
+        border: 2px solid rgba(188, 188, 188, 0.8);
+        border-radius: 10px;
         padding: 4px;
         width: 80px;
 
-
+        &:active{
+            border: 1px solid rgba(188, 188, 188, 0.8);
+            background-color: config.$primary-color-transparency-darker;
+        }
     }
 }
 
@@ -125,12 +128,20 @@ div.container-game-actions{
         background-color: config.$background-color-max-transparency; 
     }
 
-    &:focus-within{
-        background-color: pink
+    &:active{
+        border: 0.5px solid config.$accent-color;
+        background-color: config.$background-color-max-transparency; 
     }
+
+
 }
 
+.selected{
+    border: 0.5px solid config.$accent-color;
+    background-color: config.$background-color-max-transparency; 
+}
 .ship-cell-disabled{
+    border: none;
     background-color: config.$primary-color-transparency;
     pointer-events: none;
 }

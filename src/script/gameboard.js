@@ -4,11 +4,9 @@ const gameboard = () => {
 
     const shipsOnBoard = []; 
     const missedShots = []; 
-    const shotHistory = []; 
 
     const showSelectedShip = (index) => {
         if(typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition();
-       // return 
     }
        
     const showBoard = () => shipsOnBoard.map(element => element.showComposition());
@@ -49,8 +47,6 @@ const gameboard = () => {
 
     }
 
-    //const countTimesCalled = (count => () => ++count)(0);
-
     const assignShipPosition = (index, x, y, opt) => {
         
        let newShip = shipsOnBoard[index].fillComposition(x, y); 
@@ -69,6 +65,7 @@ const gameboard = () => {
                 return 'Not assigned'
             }
         } 
+        console.log(newShip);
         return  newShip
     }
 
@@ -96,12 +93,9 @@ const gameboard = () => {
     const computerAssignShipPosition = (computer) => {
         const helper = 5
         for(let i = 0; i < 5; i++){
-           // console.log(helper - i)
             assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true)
-            //SI OPT ES TRUE... 1# AGREGAR OPT A ASSIGN 
-            //if(newShip === 'Not assigned') newShip = assignShipPosition(i, computer.generateRandomNumber(helper - i), computer.generateRandomNumber(), true)
         }
-        console.log(showBoard()); 
+       // console.log(showBoard()); 
     }
 
     

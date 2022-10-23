@@ -14,15 +14,9 @@ const panelInteractivity = (event, board) => {
                 InterfaceManagment.shipLocationOnBoard(index, event.target.dataset.length);
                 InterfaceManagment.deleteBoardInteraction();
                 InterfaceManagment.removeShipVisualization(numberID); 
+                InterfaceManagment.removeListener();
             }
-            /*
-            if(status === 'All ships have been assigned'){
-                InterfaceManagment.shipLocationOnBoard(index, event.target.dataset.length);
-                InterfaceManagment.deleteBoardInteraction();
-                InterfaceManagment.computerBoardInteractivity(); 
-            }
-            */
-            
+
         })
     })
 }

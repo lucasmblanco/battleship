@@ -54,7 +54,6 @@ const eachTen = (container, callback) => {
     }
 }
 
-//asigna coordenadas a los contenedores
 const assignXY = (container, y) => {
     for(let i = 0; i < container.length; i++){
         container[i].setAttribute('data-x', i + 1);
@@ -65,12 +64,35 @@ const assignXY = (container, y) => {
 const shipElementFunctionality = (board) => {
     const playerShips = document.querySelectorAll('div.ship-cell');
     playerShips.forEach(element => {
-        element.addEventListener('click', function(e){
+        element.addEventListener('click', element.fn = function(e){
+            removeSelected(); 
+            AddSelectedStyle(e); 
             Functionality.panelInteractivity(e, board);
-        }, {once: true})
+        });
     })
 }
 
+const AddSelectedStyle = (event) => {
+    event.target.classList.add('selected'); 
+}
+
+const removeListener = () => {
+    const playerShips = document.querySelectorAll('div.ship-cell');
+    playerShips.forEach(element => {
+        console.log('buscando y removiendo')
+        if(element.classList.contains('ship-cell-disabled')){
+            element.removeEventListener('click', element.fn)
+        }
+    })
+}
+
+const removeSelected = () => {
+    const playerShips = document.querySelectorAll('div.ship-cell');
+    playerShips.forEach(element => {
+        if(element.classList.contains('selected')); 
+        element.classList.remove('selected'); 
+    })
+}
 const removeShipVisualization = (ship) => {
     const playerShips = document.querySelectorAll('div.ship-cell');
     const placedMessage = document.createElement('div');
@@ -78,7 +100,6 @@ const removeShipVisualization = (ship) => {
     placedMessage.textContent = 'ON THE BOARD';
     playerShips[ship].classList.add('ship-cell-disabled'); 
     playerShips[ship].replaceChildren(placedMessage); 
-   // playerShips[ship].classList.add('disable');
 }
 
 
@@ -109,15 +130,9 @@ const shipLocationOnBoard = (index, shipComposition) => {
 
 const computerBoardInteractivity = (playerBoard, player, computerBoard , computer, playerBoardContainer, playerComputerContainer) => {
    const computerBoardElements = document.querySelectorAll('div.computer');
-  
-
-
     computerBoardElements.forEach(element => { element.addEventListener('click', function(e){
         Functionality.computerElementsInteractivity(e,playerBoard,player, computerBoard, computer, playerBoardContainer, playerComputerContainer); 
     }, {once: true}) })
-        // LA FUNCION TEST VA A IR EN FUNCTIONALITY.JS CON LA IMPLEMENTACION PARECIDA A LA OTRA 
-    
-    
 } 
     
 const hitIndication = (element, hit) => {
@@ -138,15 +153,6 @@ const hitIndicationComputer = (positionX, positionY, hit) => {
     else if(!playerBoardElements[index].classList.contains('miss')) playerBoardElements[index].classList.add('hit'); 
 
 }
-
-
-/*
-
-const matchStatus = (status) => {
-    if(status) console.log('GANASTEEEEEE!!!!!!!!!!!!!!!');
-}
-
-*/
 
 const matchStatus = (player, enemyBoard, enemyContainer) => {
     const EORContainer = document.createElement('div'); 
@@ -187,4 +193,4 @@ const removeListenerFromComputerBoard = () => {
 
 
 export { shipElements, appendShip, boardElementsFunctionality, shipElementFunctionality, showPlayerShips, 
-    deleteBoardInteraction, shipLocationOnBoard, computerBoardInteractivity, hitIndication, hitIndicationComputer, matchStatus, removeShipVisualization}
+    deleteBoardInteraction, shipLocationOnBoard, computerBoardInteractivity, hitIndication, hitIndicationComputer, matchStatus, removeShipVisualization, removeListener}
