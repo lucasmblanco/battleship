@@ -36,12 +36,9 @@ var assignListenerPerElement = function assignListenerPerElement(container, func
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "computerElementsInteractivity": () => (/* binding */ computerElementsInteractivity),
-/* harmony export */   "panelInteractivity": () => (/* binding */ panelInteractivity),
-/* harmony export */   "recievePlayerAttack": () => (/* binding */ recievePlayerAttack)
+/* harmony export */   "panelInteractivity": () => (/* binding */ panelInteractivity)
 /* harmony export */ });
 /* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interface */ "./src/script/interface.js");
-/* harmony import */ var _player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player */ "./src/script/player.js");
-
 
 
 var panelInteractivity = function panelInteractivity(event, board) {
@@ -55,6 +52,7 @@ var panelInteractivity = function panelInteractivity(event, board) {
       if (status !== 'Not assigned') {
         _interface__WEBPACK_IMPORTED_MODULE_0__.shipLocationOnBoard(index, event.target.dataset.length);
         _interface__WEBPACK_IMPORTED_MODULE_0__.deleteBoardInteraction();
+        _interface__WEBPACK_IMPORTED_MODULE_0__.removeShipVisualization(numberID);
       }
       /*
       if(status === 'All ships have been assigned'){
@@ -73,23 +71,17 @@ var assignPositionAndDeleteInteraction = function assignPositionAndDeleteInterac
   return status;
 };
 
-var computerElementsInteractivity = function computerElementsInteractivity(event, playerBoard, player, computerBoard, computer) {
+var computerElementsInteractivity = function computerElementsInteractivity(event, playerBoard, player, computerBoard, computer, playerBoardContainer, computerBoardContainer) {
   if (!playerBoard.statusOfShips()) {
     var playerAttackStatus = player.attackEnemyBoard(computerBoard, Number(event.target.dataset.x), Number(event.target.dataset.y));
+    var computerCoord = computer.generateRandomCoordenates();
+    var computerAttackStatus = computer.attackEnemyBoard(playerBoard, computerCoord.positionX, computerCoord.positionY);
     _interface__WEBPACK_IMPORTED_MODULE_0__.hitIndication(event.target, playerAttackStatus);
-    _interface__WEBPACK_IMPORTED_MODULE_0__.matchStatus(player.shipsDestroyed(computerBoard)); //AÑARDIR VISUALIZASION DEL ATAQUE CUANDO ES ERRADO Y CUANDO PEGA; \
-    // crear function en player que se fije si hundio todos los barcos del tablero contrario; 
-    //COMPUTADORA
-
-    var positionX = computer.generateRandomNumber();
-    var positionY = computer.generateRandomNumber();
-    var computerAttackStatus = computer.attackEnemyBoard(playerBoard, positionX, positionY);
-    _interface__WEBPACK_IMPORTED_MODULE_0__.hitIndicationComputer(positionX, positionY, computerAttackStatus);
-    _interface__WEBPACK_IMPORTED_MODULE_0__.matchStatus(computer.shipsDestroyed(playerBoard)); // hitIndication(event.target, computerAttackStatus);
+    _interface__WEBPACK_IMPORTED_MODULE_0__.matchStatus(player, computerBoard, computerBoardContainer);
+    _interface__WEBPACK_IMPORTED_MODULE_0__.hitIndicationComputer(computerCoord.positionX, computerCoord.positionY, computerAttackStatus);
+    _interface__WEBPACK_IMPORTED_MODULE_0__.matchStatus(computer, playerBoard, playerBoardContainer);
   }
 };
-
-var recievePlayerAttack = function recievePlayerAttack(event, player) {};
 
 
 
@@ -111,6 +103,7 @@ __webpack_require__.r(__webpack_exports__);
 var gameboard = function gameboard() {
   var shipsOnBoard = [];
   var missedShots = [];
+  var shotHistory = [];
 
   var showSelectedShip = function showSelectedShip(index) {
     if (typeof index === 'number' && index < shipsOnBoard.length) return shipsOnBoard[index].showComposition(); // return 
@@ -318,14 +311,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "hitIndication": () => (/* binding */ hitIndication),
 /* harmony export */   "hitIndicationComputer": () => (/* binding */ hitIndicationComputer),
 /* harmony export */   "matchStatus": () => (/* binding */ matchStatus),
+/* harmony export */   "removeShipVisualization": () => (/* binding */ removeShipVisualization),
 /* harmony export */   "shipElementFunctionality": () => (/* binding */ shipElementFunctionality),
 /* harmony export */   "shipElements": () => (/* binding */ shipElements),
 /* harmony export */   "shipLocationOnBoard": () => (/* binding */ shipLocationOnBoard),
 /* harmony export */   "showPlayerShips": () => (/* binding */ showPlayerShips)
 /* harmony export */ });
-/* harmony import */ var _eventsManagment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./eventsManagment */ "./src/script/eventsManagment.js");
-/* harmony import */ var _functionality__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functionality */ "./src/script/functionality.js");
-
+/* harmony import */ var _functionality__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functionality */ "./src/script/functionality.js");
  // Crea el contenedor de los barcos y segun la composicion de cada uno crea divs dentro de este
 
 var shipElements = function shipElements(shipComposition, index) {
@@ -393,15 +385,24 @@ var shipElementFunctionality = function shipElementFunctionality(board) {
   var playerShips = document.querySelectorAll('div.ship-cell');
   playerShips.forEach(function (element) {
     element.addEventListener('click', function (e) {
-      _functionality__WEBPACK_IMPORTED_MODULE_1__.panelInteractivity(e, board);
+      _functionality__WEBPACK_IMPORTED_MODULE_0__.panelInteractivity(e, board);
     }, {
       once: true
     });
   });
 };
 
+var removeShipVisualization = function removeShipVisualization(ship) {
+  var playerShips = document.querySelectorAll('div.ship-cell');
+  var placedMessage = document.createElement('div');
+  placedMessage.classList.add('placed-message');
+  placedMessage.textContent = 'ON THE BOARD';
+  playerShips[ship].classList.add('ship-cell-disabled');
+  playerShips[ship].replaceChildren(placedMessage); // playerShips[ship].classList.add('disable');
+};
+
 var showPlayerShips = function showPlayerShips(board) {
-  var shipsContainer = document.querySelector('div.ships-container');
+  var shipsContainer = document.querySelector('div.total-container');
   var playerShipsBoard = board.showBoard();
   playerShipsBoard.forEach(function (element, index) {
     appendShip(shipsContainer, shipElements(element.length, index));
@@ -424,11 +425,11 @@ var shipLocationOnBoard = function shipLocationOnBoard(index, shipComposition) {
   }
 };
 
-var computerBoardInteractivity = function computerBoardInteractivity(playerBoard, player, computerBoard, computer) {
+var computerBoardInteractivity = function computerBoardInteractivity(playerBoard, player, computerBoard, computer, playerBoardContainer, playerComputerContainer) {
   var computerBoardElements = document.querySelectorAll('div.computer');
   computerBoardElements.forEach(function (element) {
     element.addEventListener('click', function (e) {
-      _functionality__WEBPACK_IMPORTED_MODULE_1__.computerElementsInteractivity(e, playerBoard, player, computerBoard, computer);
+      _functionality__WEBPACK_IMPORTED_MODULE_0__.computerElementsInteractivity(e, playerBoard, player, computerBoard, computer, playerBoardContainer, playerComputerContainer);
     }, {
       once: true
     });
@@ -447,9 +448,50 @@ var hitIndicationComputer = function hitIndicationComputer(positionX, positionY,
   });
   if (hit === 'You miss the shot!' && !playerBoardElements[index].classList.contains('hit')) playerBoardElements[index].classList.add('miss');else if (!playerBoardElements[index].classList.contains('miss')) playerBoardElements[index].classList.add('hit');
 };
+/*
 
-var matchStatus = function matchStatus(status) {
-  if (status) console.log('GANASTEEEEEE!!!!!!!!!!!!!!!');
+const matchStatus = (status) => {
+    if(status) console.log('GANASTEEEEEE!!!!!!!!!!!!!!!');
+}
+
+*/
+
+
+var matchStatus = function matchStatus(player, enemyBoard, enemyContainer) {
+  var EORContainer = document.createElement('div');
+  var EORScreen = document.createElement('div');
+  var restartButtonContainer = document.createElement('div');
+  var restartButton = document.createElement('button');
+  EORContainer.classList.add('eor-container');
+  EORScreen.classList.add('eor-screen');
+  restartButtonContainer.classList.add('restart-button-container');
+  restartButton.classList.add('restart-button');
+  restartButton.textContent = 'RESTART';
+  restartButton.addEventListener('click', refreshPage);
+  restartButtonContainer.append(restartButton);
+  EORContainer.append(EORScreen, restartButtonContainer);
+
+  if (player.shipsDestroyed(enemyBoard)) {
+    if (enemyContainer.classList.contains('computer-board')) {
+      enemyContainer.replaceChildren(EORContainer);
+      EORScreen.textContent = 'YOU WON!';
+    } else {
+      enemyContainer.replaceChildren(EORContainer);
+      EORScreen.textContent = 'YOU LOST!';
+      removeListenerFromComputerBoard();
+    }
+  }
+};
+
+var refreshPage = function refreshPage() {
+  location.reload();
+};
+
+var removeListenerFromComputerBoard = function removeListenerFromComputerBoard() {
+  var computerBoardElements = document.querySelectorAll('div.computer');
+  computerBoardElements.forEach(function (element) {
+    return element.classList.add('disabled-board-elements');
+  });
 };
 
 
@@ -471,6 +513,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var playButton = document.querySelector('button.play-button'); //const shipsContainer = document.querySelector('div.ships-container'); 
 
+var playerBoardContainer = document.querySelector('div.player-board');
+var computerBoardContainer = document.querySelector('div.computer-board');
 var playerBoardElements = document.querySelectorAll('div.player');
 var computerBoardElements = document.querySelectorAll('div.computer');
 
@@ -478,10 +522,12 @@ var startBattleship = function startBattleship() {
   var newGame = _gameloop__WEBPACK_IMPORTED_MODULE_1__.preGame();
   _interface__WEBPACK_IMPORTED_MODULE_2__.showPlayerShips(newGame.playerGameboard);
   _interface__WEBPACK_IMPORTED_MODULE_2__.shipElementFunctionality(newGame.playerGameboard);
-  _interface__WEBPACK_IMPORTED_MODULE_2__.computerBoardInteractivity(newGame.playerGameboard, newGame.newPlayer, newGame.computerBoard, newGame.computer); //InterfaceManagment.computerBoardInteractivity(newGame.computer, newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); 
+  _interface__WEBPACK_IMPORTED_MODULE_2__.computerBoardInteractivity(newGame.playerGameboard, newGame.newPlayer, newGame.computerBoard, newGame.computer, playerBoardContainer, computerBoardContainer); //InterfaceManagment.computerBoardInteractivity(newGame.computer, newGame.computerBoard, newGame.playerGameboard, newGame.newPlayer); 
 };
 
-playButton.addEventListener('click', startBattleship);
+playButton.addEventListener('click', startBattleship, {
+  once: true
+});
 _interface__WEBPACK_IMPORTED_MODULE_2__.boardElementsFunctionality(playerBoardElements);
 _interface__WEBPACK_IMPORTED_MODULE_2__.boardElementsFunctionality(computerBoardElements); //boardElements.addEventListener('click', selectPosititon)
 
@@ -498,6 +544,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 var Player = function Player() {
+  var playerActions = [];
+
   var attackEnemyBoard = function attackEnemyBoard(board, x, y) {
     /*
     if(!x && !y) {
@@ -506,6 +554,10 @@ var Player = function Player() {
           return board.receiveAttack(positionX, positionY);
     }
     */
+    playerActions.push({
+      'x': x,
+      'y': y
+    });
     return board.receiveAttack(x, y);
   };
 
@@ -520,6 +572,32 @@ var Player = function Player() {
     return randomNumber;
   };
 
+  var generateRandomCoordenates = function generateRandomCoordenates(shipComposition) {
+    var positionX = Math.floor(Math.random() * 10) + 1;
+    var positionY = Math.floor(Math.random() * 10) + 1;
+    var invalidCoord = playerActions.some(function (movements) {
+      return movements.x === positionX && movements.y === positionY;
+    });
+
+    if (invalidCoord) {
+      return generateRandomCoordenates(shipComposition);
+    } else {
+      if (shipComposition + positionX >= 11) positionX = Math.floor(Math.random() * (9 - shipComposition)) + 1;
+      if (shipComposition + positionY >= 11) positionY = Math.floor(Math.random() * (9 - shipComposition)) + 1;
+    }
+
+    return {
+      positionX: positionX,
+      positionY: positionY
+    };
+  };
+
+  var searchPreviousActions = function searchPreviousActions(coordX, coordY) {
+    return playerActions.some(function (movement) {
+      return movement.x === coordX && movement.y === coordY;
+    });
+  };
+
   var shipsDestroyed = function shipsDestroyed(board) {
     return board.checkShipStatus();
   };
@@ -527,7 +605,9 @@ var Player = function Player() {
   return {
     attackEnemyBoard: attackEnemyBoard,
     generateRandomNumber: generateRandomNumber,
-    shipsDestroyed: shipsDestroyed
+    shipsDestroyed: shipsDestroyed,
+    searchPreviousActions: searchPreviousActions,
+    generateRandomCoordenates: generateRandomCoordenates
   };
 };
 
@@ -643,12 +723,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__);
 // Imports
 
 
+
+var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/grifterbold.otf */ "./src/assets/grifterbold.otf"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/Montserrat-Light.otf */ "./src/assets/Montserrat-Light.otf"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_2___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/digital-7 (mono italic).ttf */ "./src/assets/digital-7 (mono italic).ttf"), __webpack_require__.b);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
+var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
+var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_2___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block;\n}\n\nbody {\n  line-height: 1;\n}\n\nol, ul {\n  list-style: none;\n}\n\nblockquote, q {\n  quotes: none;\n}\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: \"\";\n  content: none;\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n\ndiv.interaction-zone {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-flow: row wrap;\n  align-items: center;\n  justify-content: center;\n  background-color: rgb(252, 239, 220);\n}\n\ndiv.battleship-board {\n  display: grid;\n  grid-template-columns: 0.1fr 1.9fr 1fr;\n  grid-template-rows: 0.1fr 1.9fr 1fr;\n  gap: 0px 0px;\n  grid-template-areas: \". X-AXIS X-AXIS\" \"Y-AXIS BOARD BOARD\" \"Y-AXIS BOARD BOARD\";\n  width: 650px;\n  height: 650px;\n  padding: 2px;\n  background-color: rgb(93, 236, 170);\n}\ndiv.battleship-board .x-axis {\n  display: flex;\n  grid-area: X-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .x-axis .x-axis-element {\n  margin: 0 1px;\n  width: 60.83px;\n  height: 100%;\n  background-color: aqua;\n  text-align: center;\n}\ndiv.battleship-board .y-axis {\n  display: flex;\n  flex-direction: column;\n  grid-area: Y-AXIS;\n  background-color: yellowgreen;\n}\ndiv.battleship-board .y-axis .y-axis-element {\n  margin: 1px 0;\n  width: 100%;\n  height: 60.83px;\n  background-color: aqua;\n  text-align: center;\n  line-height: 60.83px;\n}\ndiv.battleship-board .board {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  grid-template-rows: repeat(10, 1fr);\n  grid-area: BOARD;\n  gap: 2px;\n  background-color: black;\n  padding: 1px;\n}\ndiv.battleship-board .board .board-element {\n  background-color: red;\n}\ndiv.battleship-board .board .ship-on-water {\n  background-color: orange;\n}\ndiv.battleship-board .board .hit {\n  background-color: purple;\n}\ndiv.battleship-board .board .miss {\n  background-color: yellow;\n}\n\nh1.title {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100vw;\n  height: 6vh;\n  text-align: center;\n}\n\ndiv.buttons-container {\n  display: flex;\n  width: 100vw;\n  height: 4vh;\n  justify-content: center;\n  align-items: center;\n}\n\nmain.main-body {\n  display: flex;\n  width: 100vw;\n  height: 90vh;\n}\n\ndiv.container-game-actions {\n  display: flex;\n  flex-flow: row wrap;\n  padding: 2px;\n  width: 700px;\n  height: 150px;\n}\n\n.ships-container {\n  background-color: red;\n}\n\n.ship-cell {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin: 2px;\n  width: 100%;\n  height: 26px;\n  background-color: blueviolet;\n}\n.ship-cell:hover {\n  background-color: black;\n}\n.ship-cell:focus-within {\n  background-color: pink;\n}\n\n.ship {\n  margin: 1px;\n  width: 22px;\n  height: 22px;\n  background-color: darkgreen;\n  pointer-events: none;\n}", "",{"version":3,"sources":["webpack://./src/styles/_reset.scss","webpack://./src/styles/style.scss","webpack://./src/styles/_utilities.scss","webpack://./src/styles/_config.scss","webpack://./src/styles/_battleship-board.scss"],"names":[],"mappings":"AAAA;;;CAAA;AAKA;;;;;;;;;;;;;EAaC,SAAA;EACA,UAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,wBAAA;ACAD;;ADEA,gDAAA;AACA;;EAEC,cAAA;ACCD;;ADCA;EACC,cAAA;ACED;;ADAA;EACC,gBAAA;ACGD;;ADDA;EACC,YAAA;ACID;;ADFA;;EAEC,WAAA;EACA,aAAA;ACKD;;ADHA;EACC,yBAAA;EACA,iBAAA;ACMD;;AClDA;EACI,WAAA;EACA,YAAA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,uBAAA;EACA,oCCTY;AF8DhB;;AG5DA;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,YAAA;EACA,gFACE;EAGF,YAAA;EACA,aAAA;EACA,YAAA;EACA,mCDbW;AFyEf;AG1DI;EACI,aAAA;EACA,iBAAA;EACA,6BAAA;AH4DR;AG1DQ;EACI,aAAA;EACA,cAAA;EACA,YAAA;EACA,sBAAA;EACA,kBAAA;AH4DZ;AGxDI;EACI,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,6BAAA;AH0DR;AGxDQ;EACI,aAAA;EACA,WAAA;EACA,eAAA;EACA,sBAAA;EACA,kBAAA;EACA,oBAAA;AH0DZ;AGtDI;EACI,aAAA;EACA,sCAAA;EACA,mCAAA;EACA,gBAAA;EACA,QAAA;EACA,uBAAA;EACA,YAAA;AHwDR;AGtDQ;EACI,qBAAA;AHwDZ;AGrDQ;EACI,wBAAA;AHuDZ;AGpDQ;EACI,wBAAA;AHsDZ;AGnDQ;EACI,wBAAA;AHqDZ;;AApHA;EACI,aAAA;EACA,uBAAA;EACA,mBAAA;EACA,YAAA;EACA,WAAA;EACA,kBAAA;AAuHJ;;AApHA;EACI,aAAA;EACA,YAAA;EACA,WAAA;EACA,uBAAA;EACA,mBAAA;AAuHJ;;AApHA;EACI,aAAA;EACA,YAAA;EACA,YAAA;AAuHJ;;AApHA;EACI,aAAA;EACA,mBAAA;EACA,YAAA;EACA,YAAA;EACA,aAAA;AAuHJ;;AAlHA;EACI,qBAAA;AAqHJ;;AAlHA;EACI,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,WAAA;EACA,WAAA;EACA,YAAA;EACA,4BAAA;AAqHJ;AAnHI;EACI,uBAAA;AAqHR;AAlHI;EACI,sBAAA;AAoHR;;AAhHA;EACI,WAAA;EACA,WAAA;EACA,YAAA;EACA,2BAAA;EACA,oBAAA;AAmHJ","sourcesContent":["/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\r\n\r\nhtml, body, div, span, applet, object, iframe,\r\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\r\na, abbr, acronym, address, big, cite, code,\r\ndel, dfn, em, img, ins, kbd, q, s, samp,\r\nsmall, strike, strong, sub, sup, tt, var,\r\nb, u, i, center,\r\ndl, dt, dd, ol, ul, li,\r\nfieldset, form, label, legend,\r\ntable, caption, tbody, tfoot, thead, tr, th, td,\r\narticle, aside, canvas, details, embed, \r\nfigure, figcaption, footer, header, hgroup, \r\nmenu, nav, output, ruby, section, summary,\r\ntime, mark, audio, video {\r\n\tmargin: 0;\r\n\tpadding: 0;\r\n\tborder: 0;\r\n\tfont-size: 100%;\r\n\tfont: inherit;\r\n\tvertical-align: baseline;\r\n}\r\n/* HTML5 display-role reset for older browsers */\r\narticle, aside, details, figcaption, figure, \r\nfooter, header, hgroup, menu, nav, section {\r\n\tdisplay: block;\r\n}\r\nbody {\r\n\tline-height: 1;\r\n}\r\nol, ul {\r\n\tlist-style: none;\r\n}\r\nblockquote, q {\r\n\tquotes: none;\r\n}\r\nblockquote:before, blockquote:after,\r\nq:before, q:after {\r\n\tcontent: '';\r\n\tcontent: none;\r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\tborder-spacing: 0;\r\n}","@use 'reset'; \r\n@use 'config';\r\n@use 'utilities';\r\n@use 'battleship-board'; \r\n\r\nh1.title {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    width: 100vw;\r\n    height: 6vh;\r\n    text-align: center;\r\n}\r\n\r\ndiv.buttons-container{\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 4vh;\r\n    justify-content: center;\r\n    align-items: center;\r\n}\r\n\r\nmain.main-body {\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 90vh;\r\n}\r\n\r\ndiv.container-game-actions{\r\n    display: flex;\r\n    flex-flow: row wrap; \r\n    padding: 2px;\r\n    width: 700px;\r\n    height: 150px;\r\n\r\n    \r\n}\r\n\r\n.ships-container{\r\n    background-color: red;\r\n}\r\n\r\n.ship-cell{\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    margin: 2px;\r\n    width: 100%;\r\n    height: 26px;\r\n    background-color: blueviolet; \r\n\r\n    &:hover{\r\n        background-color: black;\r\n    }\r\n\r\n    &:focus-within{\r\n        background-color: pink\r\n    }\r\n}\r\n\r\n.ship{\r\n    margin: 1px;\r\n    width: 22px;\r\n    height: 22px;\r\n    background-color:darkgreen; \r\n    pointer-events: none;\r\n    \r\n}\r\n\r\n","@use 'config';\r\n\r\ndiv.interaction-zone {\r\n    width: 100%;\r\n    height: 100%;\r\n    display: flex;\r\n    flex-flow: row wrap;\r\n    align-items: center;\r\n    justify-content: center;\r\n    background-color: config.$primary-color;\r\n}","$primary-color: rgb(252, 239, 220); \r\n$accent-color: rgb(93, 236, 170);","@use 'config'; \r\n\r\ndiv.battleship-board{\r\n    display: grid;\r\n    grid-template-columns: 0.1fr 1.9fr 1fr; \r\n    grid-template-rows: 0.1fr 1.9fr 1fr; \r\n    gap: 0px 0px; \r\n    grid-template-areas: \r\n      \". X-AXIS X-AXIS\"\r\n      \"Y-AXIS BOARD BOARD\"\r\n      \"Y-AXIS BOARD BOARD\"; \r\n    width: 650px;\r\n    height: 650px;\r\n    padding: 2px;\r\n    background-color: config.$accent-color;\r\n\r\n    .x-axis{\r\n        display: flex;\r\n        grid-area: X-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .x-axis-element{\r\n            margin: 0 1px;\r\n            width: 60.83px;\r\n            height: 100%;\r\n            background-color: aqua;\r\n            text-align: center;\r\n        }\r\n    }\r\n\r\n    .y-axis{\r\n        display: flex;\r\n        flex-direction: column;\r\n        grid-area: Y-AXIS;\r\n        background-color: yellowgreen;\r\n\r\n        .y-axis-element{\r\n            margin: 1px 0;\r\n            width: 100%;\r\n            height: 60.83px;\r\n            background-color: aqua;\r\n            text-align: center;\r\n            line-height: 60.83px;\r\n        }\r\n    }\r\n\r\n    .board{\r\n        display: grid;\r\n        grid-template-columns: repeat(10, 1fr);\r\n        grid-template-rows: repeat(10, 1fr);\r\n        grid-area: BOARD;\r\n        gap: 2px;\r\n        background-color: black;\r\n        padding: 1px;\r\n\r\n        .board-element{\r\n            background-color: red;\r\n        }\r\n\r\n        .ship-on-water{\r\n            background-color: orange;\r\n        }\r\n\r\n        .hit{\r\n            background-color: purple;\r\n        }\r\n        \r\n        .miss{\r\n            background-color: yellow;\r\n        }\r\n    }\r\n\r\n\r\n}\r\n\r\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block;\n}\n\nbody {\n  line-height: 1;\n}\n\nol, ul {\n  list-style: none;\n}\n\nblockquote, q {\n  quotes: none;\n}\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: \"\";\n  content: none;\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n\ndiv.interaction-zone {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-flow: row wrap;\n  align-items: center;\n  justify-content: center;\n  background-color: rgb(0, 51, 126);\n}\n\ndiv.battleship-board {\n  display: grid;\n  grid-template-columns: 0.1fr 1.9fr 1fr;\n  grid-template-rows: 0.1fr 1.9fr 1fr;\n  gap: 0px 0px;\n  grid-template-areas: \". X-AXIS X-AXIS\" \"Y-AXIS BOARD BOARD\" \"Y-AXIS BOARD BOARD\";\n  width: 650px;\n  height: 650px;\n  background-color: rgba(0, 0, 0, 0.8);\n  padding: 8px;\n  border-radius: 5px;\n}\ndiv.battleship-board .x-axis {\n  display: flex;\n  grid-area: X-AXIS;\n  background-color: rgba(90, 255, 4, 0.8);\n  border: 1px solid rgba(90, 255, 4, 0.8);\n  border-radius: 5px;\n}\ndiv.battleship-board .x-axis .x-axis-element {\n  margin: 0 1px;\n  width: 60.83px;\n  height: 100%;\n  text-align: center;\n  color: rgba(0, 0, 0, 0.8);\n  font-family: \"Grifter Bold\", Helvetica;\n  font-size: 10px;\n  line-height: 20px;\n}\ndiv.battleship-board .y-axis {\n  display: flex;\n  flex-direction: column;\n  grid-area: Y-AXIS;\n  background-color: rgba(90, 255, 4, 0.8);\n  border: 1px solid rgba(90, 255, 4, 0.8);\n  border-radius: 5px;\n}\ndiv.battleship-board .y-axis .y-axis-element {\n  margin: 1px 0;\n  width: 100%;\n  height: 60.83px;\n  text-align: center;\n  line-height: 60.83px;\n  color: rgba(0, 0, 0, 0.8);\n  font-family: \"Grifter Bold\", Helvetica;\n  font-size: 10px;\n}\ndiv.battleship-board .board {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  grid-template-rows: repeat(10, 1fr);\n  grid-area: BOARD;\n  gap: 2px;\n  background-color: rgba(90, 255, 4, 0.8);\n  padding: 1px;\n  border: 1px solid black;\n  border-radius: 5px;\n  margin: 3px;\n  pointer-events: none;\n}\ndiv.battleship-board .board .board-element {\n  background-color: rgba(0, 0, 0, 0.8);\n  pointer-events: all;\n}\ndiv.battleship-board .board .ship-on-water {\n  background-color: rgba(90, 255, 4, 0.8);\n}\ndiv.battleship-board .board .hit {\n  background-color: rgba(255, 56, 0, 0.8);\n}\ndiv.battleship-board .board .miss {\n  background-color: rgba(25, 71, 0, 0.8);\n}\n\n@font-face {\n  font-family: \"Grifter Bold\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  font-weight: 600;\n  font-style: normal;\n}\n@font-face {\n  font-family: \"Montserrat Light\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  font-weight: 600;\n  font-style: normal;\n}\n@font-face {\n  font-family: \"Led Panel\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n}\nh1.title {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100vw;\n  height: 6vh;\n  text-align: center;\n  font-family: \"Grifter Bold\", Helvetica;\n  font-size: 3em;\n  color: rgba(255, 255, 255, 0.8);\n  background-color: rgb(0, 51, 126);\n}\n\ndiv.buttons-container {\n  display: flex;\n  width: 100vw;\n  height: 4vh;\n  justify-content: center;\n  align-items: center;\n  background-color: rgb(0, 51, 126);\n}\ndiv.buttons-container .play-button {\n  font-family: \"Montserrat Light\";\n  color: white;\n  background-color: rgb(0, 51, 126);\n  border: 1px solid rgba(188, 188, 188, 0.8);\n  border-radius: 5px;\n  padding: 4px;\n  width: 80px;\n}\n\nmain.main-body {\n  display: flex;\n  width: 100vw;\n  height: 90vh;\n}\n\ndiv.container-game-actions {\n  display: flex;\n  width: 646px;\n  height: 160px;\n  border-radius: 5px;\n  padding: 10px;\n}\ndiv.container-game-actions .panel-container {\n  display: flex;\n  flex-wrap: wrap;\n  background-color: rgba(0, 0, 0, 0.8);\n  width: 75%;\n  height: 160px;\n  margin-right: 3px;\n}\ndiv.container-game-actions .panel-container .panel {\n  display: flex;\n  width: 100%;\n  align-items: center;\n  justify-content: center;\n  margin: 1px;\n  padding: 5px;\n  border: 1px solid rgba(90, 255, 4, 0.8);\n  border-radius: 5px;\n  font-family: \"Montserrat-Light\", Arial, Helvetica, sans-serif;\n  font-size: 10px;\n  background-color: rgba(90, 255, 4, 0.2);\n  color: rgba(90, 255, 4, 0.8);\n}\ndiv.container-game-actions .total-container {\n  display: flex;\n  flex-flow: row wrap;\n  width: 25%;\n  height: 160px;\n}\n\n.ships-container {\n  background-color: rgb(0, 0, 0);\n  border-radius: 5px;\n}\n\n.ship-cell {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin: 2px;\n  width: 100%;\n  height: 26px;\n  border: 0.5px solid rgba(0, 0, 0, 0.8);\n  border-radius: 5px;\n}\n.ship-cell:hover {\n  border: 0.5px solid rgba(90, 255, 4, 0.8);\n  background-color: rgba(90, 255, 4, 0.2);\n}\n.ship-cell:focus-within {\n  background-color: pink;\n}\n\n.ship-cell-disabled {\n  background-color: rgba(0, 51, 126, 0.8);\n  pointer-events: none;\n}\n\n.ship {\n  margin: 1px;\n  width: 22px;\n  height: 22px;\n  background-color: rgba(90, 255, 4, 0.8);\n  pointer-events: none;\n}\n\n.placed-message {\n  font-family: \"Montserrat Light\", Arial, Helvetica, sans-serif;\n  color: white;\n  background-color: none;\n  font-size: 10px;\n  letter-spacing: 3px;\n}\n\n.eor-container {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: center;\n  border: 5px solid rgba(255, 56, 0, 0.8);\n  border-radius: 5px;\n  width: 640px;\n  height: 640px;\n}\n.eor-container .eor-screen {\n  font-family: \"Grifter Bold\", Arial, Helvetica, sans-serif;\n  width: 50%;\n  height: 60px;\n  background-color: rgba(255, 56, 0, 0.2);\n  color: rgb(255, 56, 0);\n  border: 5px solid rgb(255, 56, 0);\n  border-radius: 5px;\n  font-size: 50px;\n  align-self: flex-end;\n  text-align: center;\n  line-height: 60px;\n}\n.eor-container .restart-button-container {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 60px;\n  align-self: flex-start;\n}\n.eor-container .restart-button-container .restart-button {\n  position: relative;\n  padding: 5px;\n  font-family: \"Montserrat-Light\", Arial, Helvetica, sans-serif;\n  border: 1px solid rgb(255, 56, 0);\n  border-radius: 5px;\n  color: rgb(255, 56, 0);\n  background-color: rgba(0, 0, 0, 0.8);\n}\n.eor-container .restart-button-container .restart-button:hover {\n  background-color: rgba(255, 56, 0, 0.8);\n  color: rgba(0, 0, 0, 0.8);\n}\n\n.disabled-board-elements {\n  pointer-events: none;\n}", "",{"version":3,"sources":["webpack://./src/styles/_reset.scss","webpack://./src/styles/style.scss","webpack://./src/styles/_utilities.scss","webpack://./src/styles/_config.scss","webpack://./src/styles/_battleship-board.scss"],"names":[],"mappings":"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","sourcesContent":["/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\r\n\r\nhtml, body, div, span, applet, object, iframe,\r\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\r\na, abbr, acronym, address, big, cite, code,\r\ndel, dfn, em, img, ins, kbd, q, s, samp,\r\nsmall, strike, strong, sub, sup, tt, var,\r\nb, u, i, center,\r\ndl, dt, dd, ol, ul, li,\r\nfieldset, form, label, legend,\r\ntable, caption, tbody, tfoot, thead, tr, th, td,\r\narticle, aside, canvas, details, embed, \r\nfigure, figcaption, footer, header, hgroup, \r\nmenu, nav, output, ruby, section, summary,\r\ntime, mark, audio, video {\r\n\tmargin: 0;\r\n\tpadding: 0;\r\n\tborder: 0;\r\n\tfont-size: 100%;\r\n\tfont: inherit;\r\n\tvertical-align: baseline;\r\n}\r\n/* HTML5 display-role reset for older browsers */\r\narticle, aside, details, figcaption, figure, \r\nfooter, header, hgroup, menu, nav, section {\r\n\tdisplay: block;\r\n}\r\nbody {\r\n\tline-height: 1;\r\n}\r\nol, ul {\r\n\tlist-style: none;\r\n}\r\nblockquote, q {\r\n\tquotes: none;\r\n}\r\nblockquote:before, blockquote:after,\r\nq:before, q:after {\r\n\tcontent: '';\r\n\tcontent: none;\r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\tborder-spacing: 0;\r\n}","@use 'reset'; \r\n@use 'config';\r\n@use 'utilities';\r\n@use 'battleship-board'; \r\n\r\n@font-face {\r\n    font-family: 'Grifter Bold';\r\n    src: url(\"../assets/grifterbold.otf\");\r\n    font-weight: 600;\r\n    font-style: normal;\r\n}\r\n\r\n@font-face {\r\n    font-family: 'Montserrat Light';\r\n    src: url('../assets/Montserrat-Light.otf');\r\n    font-weight: 600;\r\n    font-style: normal;\r\n}\r\n\r\n@font-face {\r\n    font-family: 'Led Panel';\r\n    src: url('../assets/digital-7\\ \\(mono\\ italic\\).ttf');\r\n}\r\n\r\nh1.title {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    width: 100vw;\r\n    height: 6vh;\r\n    text-align: center;\r\n    font-family: 'Grifter Bold', Helvetica;\r\n    font-size: 3em;\r\n    color: config.$primary-font-color; \r\n    background-color: config.$primary-color;\r\n}\r\n\r\ndiv.buttons-container{\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 4vh;\r\n    justify-content: center;\r\n    align-items: center;\r\n    background-color: config.$primary-color;\r\n\r\n    .play-button{\r\n        font-family: 'Montserrat Light';\r\n        color: white;\r\n        background-color: config.$primary-color;\r\n        border: 1px solid rgba(188, 188, 188, 0.8);\r\n        border-radius: 5px;\r\n        padding: 4px;\r\n        width: 80px;\r\n\r\n\r\n    }\r\n}\r\n\r\nmain.main-body {\r\n    display: flex;\r\n    width: 100vw;\r\n    height: 90vh;\r\n}\r\n\r\ndiv.container-game-actions{\r\n    display: flex;\r\n    width: 646px;\r\n    height: 160px;\r\n    border-radius: 5px;\r\n    padding: 10px;\r\n\r\n    .panel-container{\r\n        display: flex;\r\n        flex-wrap: wrap;\r\n        background-color: config.$background-color;\r\n        width: 75%;\r\n        height: 160px;\r\n        margin-right: 3px;\r\n        \r\n\r\n        .panel{\r\n            display: flex;\r\n            width: 100%;\r\n            align-items:center;\r\n            justify-content: center;\r\n            margin: 1px;\r\n            padding: 5px;\r\n            border: 1px solid config.$accent-color;\r\n            border-radius: 5px;\r\n            font-family: 'Montserrat-Light', Arial, Helvetica, sans-serif;\r\n            font-size: 10px;\r\n            background-color: config.$background-color-max-transparency;\r\n            color: config.$accent-color;\r\n        }\r\n        \r\n    }\r\n\r\n    .total-container{\r\n        display: flex;\r\n        flex-flow: row wrap; \r\n        width: 25%;\r\n        height: 160px;\r\n    }\r\n}\r\n\r\n.ships-container{\r\n    background-color: config.$background-color-no-transparency;\r\n    border-radius: 5px;\r\n\r\n\r\n}\r\n\r\n.ship-cell{\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    margin: 2px;\r\n    width: 100%;\r\n    height: 26px;\r\n    border: 0.5px solid config.$background-color;\r\n    border-radius: 5px; \r\n\r\n    &:hover{\r\n        border: 0.5px solid config.$accent-color;\r\n        background-color: config.$background-color-max-transparency; \r\n    }\r\n\r\n    &:focus-within{\r\n        background-color: pink\r\n    }\r\n}\r\n\r\n.ship-cell-disabled{\r\n    background-color: config.$primary-color-transparency;\r\n    pointer-events: none;\r\n}\r\n\r\n.ship{\r\n    margin: 1px;\r\n    width: 22px;\r\n    height: 22px;\r\n    background-color: config.$accent-color; \r\n    pointer-events: none;\r\n}\r\n\r\n.placed-message{\r\n    font-family: 'Montserrat Light', Arial, Helvetica, sans-serif;\r\n    color: white;\r\n    background-color: none;\r\n    font-size: 10px;\r\n    letter-spacing: 3px;\r\n}\r\n\r\n.eor-container{\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border: 5px solid config.$hit-on-ship;\r\n    border-radius: 5px;\r\n    width: 640px;\r\n    height: 640px;\r\n\r\n    .eor-screen{\r\n        font-family: 'Grifter Bold', Arial, Helvetica, sans-serif;\r\n        width: 50%;\r\n        height: 60px;\r\n        background-color: config.$eor-message-red-max-transparency;\r\n        color: config.$eor-message-red;\r\n        border: 5px solid config.$eor-message-red;\r\n        border-radius: 5px;\r\n        font-size: 50px;\r\n        align-self: flex-end;\r\n        text-align: center;\r\n        line-height: 60px;\r\n    }\r\n\r\n    .restart-button-container{\r\n        display: flex;\r\n        align-items: center;\r\n        justify-content: center;\r\n        width: 100%;\r\n        height: 60px;\r\n        align-self: flex-start;\r\n\r\n        .restart-button{\r\n            position: relative;\r\n            padding: 5px;\r\n            font-family: 'Montserrat-Light', Arial, Helvetica, sans-serif;\r\n            border: 1px solid config.$eor-message-red; \r\n            border-radius: 5px;\r\n            color: config.$eor-message-red;\r\n            background-color: config.$background-color;\r\n\r\n            &:hover{\r\n                background-color: config.$hit-on-ship;\r\n                color: config.$background-color;\r\n            }\r\n        }\r\n    }\r\n    \r\n}\r\n\r\n\r\n\r\n\r\n.disabled-board-elements{\r\n    pointer-events: none;\r\n}\r\n\r\n\r\n","@use 'config';\r\n\r\ndiv.interaction-zone {\r\n    width: 100%;\r\n    height: 100%;\r\n    display: flex;\r\n    flex-flow: row wrap;\r\n    align-items: center;\r\n    justify-content: center;\r\n    background-color: config.$primary-color;\r\n}","$primary-color: rgba(0, 51, 126, 1); \r\n$primary-color-transparency: rgba(0, 51, 126, 0.8); \r\n$accent-color: rgba(90, 255, 4, 0.8);\r\n$accent-color-no-transparency:  rgba(90, 255, 4, 1);\r\n$primary-font-color: rgba(255, 255, 255, 0.8);\r\n$background-color: rgba(0, 0, 0, 0.8); \r\n$background-color-no-transparency: rgba(0, 0, 0, 1); \r\n$background-color-max-transparency: rgba(90, 255, 4, 0.2);\r\n$hit-on-water: rgba(25, 71, 0, 0.8);\r\n$hit-on-ship: rgba(255, 56, 0, 0.8);\r\n$eor-message-red: rgba(255, 56, 0, 1);\r\n$eor-message-red-max-transparency: rgba(255, 56, 0, 0.2);","@use 'config'; \r\n\r\ndiv.battleship-board{\r\n    display: grid;\r\n    grid-template-columns: 0.1fr 1.9fr 1fr; \r\n    grid-template-rows: 0.1fr 1.9fr 1fr; \r\n    gap: 0px 0px; \r\n    grid-template-areas: \r\n      \". X-AXIS X-AXIS\"\r\n      \"Y-AXIS BOARD BOARD\"\r\n      \"Y-AXIS BOARD BOARD\"; \r\n    width: 650px;\r\n    height: 650px;\r\n    background-color: config.$background-color;\r\n    padding: 8px;\r\n    border-radius: 5px;\r\n    \r\n\r\n    .x-axis{\r\n        display: flex;\r\n        grid-area: X-AXIS;\r\n        background-color: config.$accent-color;\r\n        border: 1px solid config.$accent-color;\r\n        border-radius: 5px;\r\n        \r\n\r\n        .x-axis-element{\r\n            margin: 0 1px;\r\n            width: 60.83px;\r\n            height: 100%;\r\n            \r\n            text-align: center;\r\n            color: config.$background-color;\r\n            font-family: 'Grifter Bold', Helvetica;\r\n            font-size: 10px;\r\n            line-height: 20px;\r\n        }\r\n    }\r\n\r\n    .y-axis{\r\n        display: flex;\r\n        flex-direction: column;\r\n        grid-area: Y-AXIS;\r\n        background-color: config.$accent-color;\r\n        border: 1px solid config.$accent-color;\r\n        border-radius: 5px;\r\n\r\n        .y-axis-element{\r\n            margin: 1px 0;\r\n            width: 100%;\r\n            height: 60.83px;\r\n           \r\n            text-align: center;\r\n            line-height: 60.83px;\r\n            color: config.$background-color;\r\n            font-family: 'Grifter Bold', Helvetica;\r\n            font-size: 10px;\r\n        }\r\n    }\r\n\r\n    .board{\r\n        display: grid;\r\n        grid-template-columns: repeat(10, 1fr);\r\n        grid-template-rows: repeat(10, 1fr);\r\n        grid-area: BOARD;\r\n        gap: 2px;\r\n        background-color: config.$accent-color;\r\n        padding: 1px;\r\n        border: 1px solid black;\r\n        border-radius: 5px;\r\n        margin:3px;\r\n        pointer-events: none;\r\n      \r\n\r\n        .board-element{\r\n            background-color: config.$background-color;\r\n            pointer-events: all;\r\n        }\r\n\r\n        .ship-on-water{\r\n            background-color: config.$accent-color;\r\n        }\r\n\r\n        .hit{\r\n            background-color: config.$hit-on-ship;\r\n        }\r\n        \r\n        .miss{\r\n            background-color: config.$hit-on-water;\r\n        }\r\n    }\r\n\r\n\r\n}\r\n\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -762,6 +851,44 @@ module.exports = function (cssWithMappingToString) {
   };
 
   return list;
+};
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/runtime/getUrl.js":
+/*!********************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/getUrl.js ***!
+  \********************************************************/
+/***/ ((module) => {
+
+
+
+module.exports = function (url, options) {
+  if (!options) {
+    options = {};
+  }
+
+  if (!url) {
+    return url;
+  }
+
+  url = String(url.__esModule ? url.default : url); // If url is already wrapped in quotes, remove them
+
+  if (/^['"].*['"]$/.test(url)) {
+    url = url.slice(1, -1);
+  }
+
+  if (options.hash) {
+    url += options.hash;
+  } // Should url be wrapped?
+  // See https://drafts.csswg.org/css-values-3/#urls
+
+
+  if (/["'() \t\n]|(%20)/.test(url) || options.needQuotes) {
+    return "\"".concat(url.replace(/"/g, '\\"').replace(/\n/g, "\\n"), "\"");
+  }
+
+  return url;
 };
 
 /***/ }),
@@ -1155,6 +1282,36 @@ function styleTagTransform(css, styleElement) {
 
 module.exports = styleTagTransform;
 
+/***/ }),
+
+/***/ "./src/assets/Montserrat-Light.otf":
+/*!*****************************************!*\
+  !*** ./src/assets/Montserrat-Light.otf ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "Montserrat-Light.otf";
+
+/***/ }),
+
+/***/ "./src/assets/digital-7 (mono italic).ttf":
+/*!************************************************!*\
+  !*** ./src/assets/digital-7 (mono italic).ttf ***!
+  \************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "digital-7 (mono italic).ttf";
+
+/***/ }),
+
+/***/ "./src/assets/grifterbold.otf":
+/*!************************************!*\
+  !*** ./src/assets/grifterbold.otf ***!
+  \************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "grifterbold.otf";
+
 /***/ })
 
 /******/ 	});
@@ -1183,6 +1340,9 @@ module.exports = styleTagTransform;
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
@@ -1208,6 +1368,18 @@ module.exports = styleTagTransform;
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -1222,6 +1394,52 @@ module.exports = styleTagTransform;
 /******/ 			}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript)
+/******/ 				scriptUrl = document.currentScript.src
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) scriptUrl = scripts[scripts.length - 1].src
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		__webpack_require__.b = document.baseURI || self.location.href;
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"page": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		// no on chunks loaded
+/******/ 		
+/******/ 		// no jsonp function
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/nonce */
@@ -1239,4 +1457,4 @@ module.exports = styleTagTransform;
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=page5796749373f928b460b6.js.map
+//# sourceMappingURL=pagea49df5cdcf043d9b47c8.js.map
