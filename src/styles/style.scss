@@ -230,4 +230,12 @@ div.container-game-actions{
     pointer-events: none;
 }
 
+span.word-bold{
+    font-weight: bold;
+    white-space: pre;
+}
 
+span.word-underline{
+    text-decoration: underline;
+    white-space: pre;
+}
