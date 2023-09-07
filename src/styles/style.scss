@@ -22,12 +22,18 @@
     src: url('../assets/digital-7\ \(mono\ italic\).ttf');
 }
 
+body{
+    overflow-x: hidden;
+    background-color: config.$primary-color;
+    height: 100vh;
+}
+
 h1.title {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100vw;
-    height: 6vh;
+    padding-block: .5rem;
     text-align: center;
     font-family: 'Grifter Bold', Helvetica;
     font-size: 3em;
@@ -38,7 +44,7 @@ h1.title {
 div.buttons-container{
     display: flex;
     width: 100vw;
-    height: 4vh;
+    padding-block: .5rem;
     justify-content: center;
     align-items: center;
     background-color: config.$primary-color;
@@ -52,6 +58,11 @@ div.buttons-container{
         padding: 4px;
         width: 80px;
 
+        &:hover{
+            background-color: config.$hit-on-water;
+            cursor: pointer;
+        }
+
         &:active{
             border: 1px solid rgba(188, 188, 188, 0.8);
             background-color: config.$primary-color-transparency-darker;
@@ -62,7 +73,6 @@ div.buttons-container{
 main.main-body {
     display: flex;
     width: 100vw;
-    height: 90vh;
 }
 
 div.container-game-actions{
@@ -70,7 +80,8 @@ div.container-game-actions{
     width: 646px;
     height: 160px;
     border-radius: 5px;
-    padding: 10px;
+    padding-inline: 10px;
+    padding-block: 5px;
 
     .panel-container{
         display: flex;
