@@ -61,10 +61,11 @@ div.buttons-container{
         &:hover{
             background-color: config.$hit-on-water;
             cursor: pointer;
+           
         }
 
         &:active{
-            border: 1px solid rgba(188, 188, 188, 0.8);
+            border: 2px solid rgba(188, 188, 188, 0.8);
             background-color: config.$primary-color-transparency-darker;
         }
     }
